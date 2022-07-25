@@ -6,7 +6,6 @@ class AccountTax(models.Model):
     _inherit = 'account.tax'
     
     def create_payment_withholdings(self, payment_group):
-        self.ensure_one()
         tax_exempt = self.env['account.tax']
         for rec in self:
             for exempt_id in payment_group.partner_id.exemption_withholding_ids:
