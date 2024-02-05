@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<odoo>
+<odoo noupdate="0">
     <record id="view_account_ar_vat_line_search" model="ir.ui.view">
          <field name="name">account.ar.vat.line.search</field>
          <field name="model">account.ar.vat.line</field>
@@ -40,6 +40,8 @@
                 <field name="date"/>
                 <field name="move_id"/>
                 <field name="partner_id"/>
+                <field name="partner_id"/>
+                <field name="product_name"/>
                 <field name="not_taxed" sum="Total"/>
                 <field name="base_25" sum="Total"/>
                 <field name="vat_25" sum="Total"/>
@@ -53,6 +55,9 @@
                 <field name="vat_27" sum="Total"/>
                 <field name="vat_per" sum="Total"/>
                 <field name="other_taxes" sum="Total"/>
+                <field name="icl_tax" sum="Total"/>
+                <field name="idc_tax" sum="Total"/>
+                <field name="net_total" sum="Total"/>
                 <field name="total" sum="Total"/>
                 <button name="open_journal_entry" string="Open" type="object" icon="fa-external-link" help="Open journal entry"/>
             </tree>
@@ -79,6 +84,9 @@
                 <field name="vat_27" type="measure"/>
                 <field name="vat_per" type="measure"/>
                 <field name="other_taxes" type="measure"/>
+                <field name="icl_tax" type="measure"/>
+                <field name="idc_tax" type="measure"/>
+                <field name="net_total" type="measure"/>
                 <field name="total" type="measure"/>
             </pivot>
          </field>
