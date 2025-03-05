@@ -128,121 +128,117 @@ class AccountImportPadronRetPerc(models.Model):
         #                                                 date_to_string)
         conn = None
         flag_month = False
-        try:
-            #####################################################
-            # PARA LAS RETENCIONES
-            ######################################################
-            consulta = 'select col3,col4,col5,col9 from arbaret' + where
+        #####################################################
+        # PARA LAS RETENCIONES
+        ######################################################
+        consulta = 'select col3,col4,col5,col9 from arbaret' + where
 
-            conn = self._get_conn(import_obj)
-            cur = conn.cursor()
-            cur.execute(consulta)
-            for line in cur.fetchall():
-                string_from = str(line[0])
-                if len(string_from) < 8:
-                    string_from = '0' + string_from
-                date_from_server = string_from[
-                    4:8] + string_from[2:4] + string_from[:2]
+        conn = self._get_conn(import_obj)
+        cur = conn.cursor()
+        cur.execute(consulta)
+        for line in cur.fetchall():
+            string_from = str(line[0])
+            if len(string_from) < 8:
+                string_from = '0' + string_from
+            date_from_server = string_from[
+                4:8] + string_from[2:4] + string_from[:2]
 
-                string_to = str(line[1])
-                if len(string_to) < 8:
-                    string_to = '0' + string_to
-                date_to_server = string_to[4:8] + \
-                    string_to[2:4] + string_to[:2]
+            string_to = str(line[1])
+            if len(string_to) < 8:
+                string_to = '0' + string_to
+            date_to_server = string_to[4:8] + \
+                string_to[2:4] + string_to[:2]
 
-                if int(date_from) <= int(date_from_server) and int(date_to) >= int(date_to_server):
-                    flag_month = True
-                    flag = True
-                    for line_obj in self.import_line_ids:
-                        line_date_from_int = int(str(line_obj.date_from)[
-                                                 0:4] + str(line_obj.date_from)[5:7] + str(line_obj.date_from)[8:10])
-                        if line_obj.partner_id.id == partner_dic[str(line[2])].id and line_date_from_int == int(date_from):
-                            flag = False
-                            percentage_retention = (str(line[3]).replace('.', '')).replace(',', '.')
-                            vals = {
-                                'percentage_retention': percentage_retention,
-                            }
-                            line_obj.sudo().write(vals)
-                    if flag:
-                        percentage_retention = (
-                            str(line[3]).replace('.', '')).replace(',', '.')
-                        if type(date_from) == str:
-                            date_from_final = date_from[0:4] + '-' + date_from[4:6] + '-'  + date_from[6:8]
-                        else:
-                            date_from_final = date_from
-                        if type(date_to) == str:
-                            date_to_final = date_to[0:4] + '-' + date_to[4:6] + '-'  + date_to[6:8]
-                        else:
-                            date_to_final = date_to
+            if int(date_from) <= int(date_from_server) and int(date_to) >= int(date_to_server):
+                flag_month = True
+                flag = True
+                for line_obj in self.import_line_ids:
+                    line_date_from_int = int(str(line_obj.date_from)[
+                                                0:4] + str(line_obj.date_from)[5:7] + str(line_obj.date_from)[8:10])
+                    if line_obj.partner_id.id == partner_dic[str(line[2])].id and line_date_from_int == int(date_from):
+                        flag = False
+                        percentage_retention = (str(line[3]).replace('.', '')).replace(',', '.')
                         vals = {
-                            'import_padron_id': import_obj.id,
-                            'padron_type_id': import_obj.padron_type_id.id,
-                            'cuit': line[2],
-                            'partner_id': partner_dic[str(line[2])].id,
-                            'date_from': date_from_final,
-                            'date_to': date_to_final,
-                            'percentage_perception': import_obj.default_percentage_perception,
                             'percentage_retention': percentage_retention,
                         }
-                        new_line = self.env[
-                            'account.padron.retention.perception.line'].sudo().create(vals)
-            cur.close()
-            ######################################################
-            # PARA LAS PERCEPCIONES
-            ######################################################
-            consulta = 'select col3,col4,col5,col9 from arbaper' + where
-            conn = self._get_conn(import_obj)
-            cur = conn.cursor()
-            cur.execute(consulta)
+                        line_obj.sudo().write(vals)
+                if flag:
+                    percentage_retention = (
+                        str(line[3]).replace('.', '')).replace(',', '.')
+                    if type(date_from) == str:
+                        date_from_final = date_from[0:4] + '-' + date_from[4:6] + '-'  + date_from[6:8]
+                    else:
+                        date_from_final = date_from
+                    if type(date_to) == str:
+                        date_to_final = date_to[0:4] + '-' + date_to[4:6] + '-'  + date_to[6:8]
+                    else:
+                        date_to_final = date_to
+                    vals = {
+                        'import_padron_id': import_obj.id,
+                        'padron_type_id': import_obj.padron_type_id.id,
+                        'cuit': line[2],
+                        'partner_id': partner_dic[str(line[2])].id,
+                        'date_from': date_from_final,
+                        'date_to': date_to_final,
+                        'percentage_perception': import_obj.default_percentage_perception,
+                        'percentage_retention': percentage_retention,
+                    }
+                    new_line = self.env[
+                        'account.padron.retention.perception.line'].sudo().create(vals)
+        cur.close()
+        ######################################################
+        # PARA LAS PERCEPCIONES
+        ######################################################
+        consulta = 'select col3,col4,col5,col9 from arbaper' + where
+        conn = self._get_conn(import_obj)
+        cur = conn.cursor()
+        cur.execute(consulta)
 
-            for line in cur.fetchall():
-                string_from = str(line[0])
-                if len(string_from) < 8:
-                    string_from = '0' + string_from
-                date_from_server = string_from[
-                    4:8] + string_from[2:4] + string_from[:2]
+        for line in cur.fetchall():
+            string_from = str(line[0])
+            if len(string_from) < 8:
+                string_from = '0' + string_from
+            date_from_server = string_from[
+                4:8] + string_from[2:4] + string_from[:2]
 
-                string_to = str(line[1])
-                if len(string_to) < 8:
-                    string_to = '0' + string_to
-                date_to_server = string_to[4:8] + \
-                    string_to[2:4] + string_to[:2]
+            string_to = str(line[1])
+            if len(string_to) < 8:
+                string_to = '0' + string_to
+            date_to_server = string_to[4:8] + \
+                string_to[2:4] + string_to[:2]
 
-                if int(date_from) <= int(date_from_server) and int(date_to) >= int(date_to_server):
-                    flag_month = True
-                    flag = True
-                    for line_obj in self.import_line_ids:
-                        line_date_from_int = int(str(line_obj.date_from)[
-                                                 0:4] + str(line_obj.date_from)[5:7] + str(line_obj.date_from)[8:10])
-                        if line_obj.partner_id.id == partner_dic[str(line[2])].id and line_date_from_int == int(date_from):
-                            flag = False
-                            percentage_perception = (
-                                str(line[3]).replace('.', '')).replace(',', '.')
-                            vals = {
-                                'percentage_perception': percentage_perception,  # percentage_perception
-                            }
-                            line_obj.sudo().write(vals)
-                    if flag:
+            if int(date_from) <= int(date_from_server) and int(date_to) >= int(date_to_server):
+                flag_month = True
+                flag = True
+                for line_obj in self.import_line_ids:
+                    line_date_from_int = int(str(line_obj.date_from)[
+                                                0:4] + str(line_obj.date_from)[5:7] + str(line_obj.date_from)[8:10])
+                    if line_obj.partner_id.id == partner_dic[str(line[2])].id and line_date_from_int == int(date_from):
+                        flag = False
                         percentage_perception = (
                             str(line[3]).replace('.', '')).replace(',', '.')
                         vals = {
-                            'import_padron_id': import_obj.id,
-                            'padron_type_id': import_obj.padron_type_id.id,
-                            'cuit': line[2],
-                            'partner_id': partner_dic[str(line[2])].id,
-                            'date_from': date_from_final,
-                            'date_to': date_to_final,
-                            'percentage_perception': percentage_perception,
-                            'percentage_retention': import_obj.default_percentage_retention,
+                            'percentage_perception': percentage_perception,  # percentage_perception
                         }
-                        new_line = self.env[
-                            'account.padron.retention.perception.line'].sudo().create(vals)
-            cur.close()
-        except (Exception, psycopg2.DatabaseError) as error:
-            raise ValidationError(_(error))
-        finally:
-            if conn is not None:
-                conn.close()
+                        line_obj.sudo().write(vals)
+                if flag:
+                    percentage_perception = (
+                        str(line[3]).replace('.', '')).replace(',', '.')
+                    vals = {
+                        'import_padron_id': import_obj.id,
+                        'padron_type_id': import_obj.padron_type_id.id,
+                        'cuit': line[2],
+                        'partner_id': partner_dic[str(line[2])].id,
+                        'date_from': date_from_final,
+                        'date_to': date_to_final,
+                        'percentage_perception': percentage_perception,
+                        'percentage_retention': import_obj.default_percentage_retention,
+                    }
+                    new_line = self.env[
+                        'account.padron.retention.perception.line'].sudo().create(vals)
+        cur.close()
+        if conn is not None:
+            conn.close()
         if flag_month:
             for line_dicc in partner_dic:
                 if partner_dic[line_dicc] != None:
@@ -302,65 +298,61 @@ class AccountImportPadronRetPerc(models.Model):
 
         conn = None
         flag_month = False
-        try:
-            consulta = 'select col2,col3,col4,col8,col9 from agip' + where
-            conn = self._get_conn(import_obj)
-            cur = conn.cursor()
-            cur.execute(consulta)
-            for line in cur.fetchall():
-                string_from = str(line[0])
-                if len(string_from) < 8:
-                    string_from = '0' + string_from
-                date_from_server = string_from[
-                    4:8] + string_from[2:4] + string_from[:2]
+        consulta = 'select col2,col3,col4,col8,col9 from agip' + where
+        conn = self._get_conn(import_obj)
+        cur = conn.cursor()
+        cur.execute(consulta)
+        for line in cur.fetchall():
+            string_from = str(line[0])
+            if len(string_from) < 8:
+                string_from = '0' + string_from
+            date_from_server = string_from[
+                4:8] + string_from[2:4] + string_from[:2]
 
-                string_to = str(line[1])
-                if len(string_to) < 8:
-                    string_to = '0' + string_to
-                date_to_server = string_to[4:8] + \
-                    string_to[2:4] + string_to[:2]
+            string_to = str(line[1])
+            if len(string_to) < 8:
+                string_to = '0' + string_to
+            date_to_server = string_to[4:8] + \
+                string_to[2:4] + string_to[:2]
 
-                if int(date_from) <= int(date_from_server) and int(date_to) >= int(date_to_server):
-                    flag_month = True
-                    flag = True
-                    for line_obj in self.import_line_ids:
-                        line_date_from_int = int(str(line_obj.date_from)[
-                                                 0:4] + str(line_obj.date_from)[5:7] + str(line_obj.date_from)[8:10])
-                        if line_obj.partner_id.id == partner_dic[str(line[2])].id and line_date_from_int == int(date_from):
-                            flag = False
-                    if flag:
-                        percentage_perception = (
-                            str(line[3]).replace('.', '')).replace(',', '.')
-                        percentage_retention = (
-                            str(line[4]).replace('.', '')).replace(',', '.')
-                        if type(date_from) == str:
-                            date_from_final = date_from[0:4] + '-' + date_from[4:6] + '-'  + date_from[6:8]
-                        else:
-                            date_from_final = date_from
-                        if type(date_to) == str:
-                            date_to_final = date_to[0:4] + '-' + date_to[4:6] + '-'  + date_to[6:8]
-                        else:
-                            date_to_final = date_to
-                        vals = {
-                            'import_padron_id': import_obj.id,
-                            'padron_type_id': import_obj.padron_type_id.id,
-                            'cuit': line[2],
-                            'partner_id': partner_dic[str(line[2])].id,
-                            'date_from': date_from_final,
-                            'date_to': date_to_final,
-                            'percentage_perception': percentage_perception,
-                            'percentage_retention': percentage_retention,
-                        }
-                        move = self.env[
-                            'account.padron.retention.perception.line'].sudo().create(vals)
-                        move.create_arba_perception_line()
-                        partner_dic[line[3]] = None
-            cur.close()
-        except (Exception, psycopg2.DatabaseError) as error:
-            raise ValidationError(_(error))
-        finally:
-            if conn is not None:
-                conn.close()
+            if int(date_from) <= int(date_from_server) and int(date_to) >= int(date_to_server):
+                flag_month = True
+                flag = True
+                for line_obj in self.import_line_ids:
+                    line_date_from_int = int(str(line_obj.date_from)[
+                                                0:4] + str(line_obj.date_from)[5:7] + str(line_obj.date_from)[8:10])
+                    if line_obj.partner_id.id == partner_dic[str(line[2])].id and line_date_from_int == int(date_from):
+                        flag = False
+                if flag:
+                    percentage_perception = (
+                        str(line[3]).replace('.', '')).replace(',', '.')
+                    percentage_retention = (
+                        str(line[4]).replace('.', '')).replace(',', '.')
+                    if type(date_from) == str:
+                        date_from_final = date_from[0:4] + '-' + date_from[4:6] + '-'  + date_from[6:8]
+                    else:
+                        date_from_final = date_from
+                    if type(date_to) == str:
+                        date_to_final = date_to[0:4] + '-' + date_to[4:6] + '-'  + date_to[6:8]
+                    else:
+                        date_to_final = date_to
+                    vals = {
+                        'import_padron_id': import_obj.id,
+                        'padron_type_id': import_obj.padron_type_id.id,
+                        'cuit': line[2],
+                        'partner_id': partner_dic[str(line[2])].id,
+                        'date_from': date_from_final,
+                        'date_to': date_to_final,
+                        'percentage_perception': percentage_perception,
+                        'percentage_retention': percentage_retention,
+                    }
+                    move = self.env[
+                        'account.padron.retention.perception.line'].sudo().create(vals)
+                    move.create_arba_perception_line()
+                    partner_dic[line[3]] = None
+        cur.close()
+        if conn is not None:
+            conn.close()
         if flag_month:
             for line_dicc in partner_dic:
                 if partner_dic[line_dicc] != None:
