@@ -6,7 +6,7 @@
 	    <field name="inherit_id" ref="account.view_move_form"/>
 	    <field name="arch" type="xml">
 	        <xpath expr="//button[@name='preview_invoice']" position="after">
-	            <button name="control_perception" type="object" string="Control Perception" attrs="{ 'invisible': [('move_type', 'not in', ['out_invoice','out_refund'])] }" groups="account_padron_withholding_perception.padron_retention_perception_responsible_group"/>
+	            <button name="control_perception" type="object" string="Control Perception" invisible="move_type not in ['out_invoice','out_refund']" groups="account_padron_withholding_perception.padron_retention_perception_responsible_group"/>
 	        </xpath>
 	    </field>
 	</record>

@@ -24,7 +24,7 @@
             <form>
                 <header>
                     <button name="import_padron_server" string="Import Padron Server" type="object" class="oe_highlight"/>
-                    <button name="open2close" string="Close" type="object" class="oe_highlight" attrs="{'invisible':[('state','!=','open')]}"/>
+                    <button name="open2close" string="Close" type="object" class="oe_highlight" invisible="state != 'open'"/>
                     <field name="state" widget="statusbar" statusbar_visible="open,close" readonly="1"/>
                 </header>
                 <group>

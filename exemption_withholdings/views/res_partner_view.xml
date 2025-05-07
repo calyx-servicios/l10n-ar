@@ -6,7 +6,7 @@
         <field name="inherit_id" ref="base.view_partner_form"/>
         <field name="arch" type="xml">
             <xpath expr="//page[@name='fiscal_data']" position="after">
-                <page string="Exemption Withholdings" name="exemption_withholding" attrs="{'invisible': [('is_company','=',False)]}">
+                <page string="Exemption Withholdings" name="exemption_withholding" invisible="is_company == False">
                     <field name="exemption_withholding_ids" widget="one2many" context="{'active_test': False}"/>
                 </page>
             </xpath>

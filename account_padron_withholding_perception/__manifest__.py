@@ -10,12 +10,12 @@
     "website": "http://odoo.calyx-cloud.com.ar/",
     "license": "AGPL-3",
     "category": "Account",
-    "version": "16.0.7.0.1",
+    "version": "17.0.7.0.1",
     "installable": True,
     "application": False,
     "depends": [
         'account_payment_group',
-        'account_withholding_automatic',
+        'l10n_ar_withholding_automatic',
         'l10n_ar_account_withholding'
     ],
     "data": [
