@@ -1,6 +1,6 @@
 {
     "name": "Extension de Grupos de Pago con Múltiples Métodos",
-    "version": "17.0.1.0.14",
+    "version": "17.0.1.0.15",
     "category": "Accounting",
     "author": "Felipe Carlini",
     "license": "AGPL-3",
@@ -9,7 +9,8 @@
     "depends": [
         "account_payment_group",
         "l10n_ar_withholding_ux",
-        "l10n_ar_account_withholding"
+        "l10n_ar_account_withholding",
+        "l10n_ar_withholding_automatic"
     ],
     "data": [
         "views/account_payment_group_view.xml",
