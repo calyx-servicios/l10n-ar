@@ -6,6 +6,17 @@
         <field name="model">account.payment.group</field>
         <field name="inherit_id" ref="account_payment_group.view_account_payment_group_form"/>
         <field name="arch" type="xml">
+            <field name="retencion_ganancias" position="attributes">
+                <attribute name="required">False</attribute>
+                <attribute name="invisible">True</attribute>
+            </field>
+            <field name="regimen_ganancias_id" position="attributes">
+                <attribute name="required">False</attribute>
+                <attribute name="invisible">True</attribute>
+            </field>
+            <field name="regimen_ganancias_id" position="after">
+                <field name="company_regimenes_ganancias_ids" invisible="True"/>
+            </field>
             <xpath expr="//button[@name='post']" position="after">
                 <button name="compute_withholdings" class="oe_highlight" string="Calcular retenciones" type="object" invisible="state != 'draft' or partner_type != 'supplier'"/>
             </xpath>
@@ -80,15 +91,12 @@
                             <field name="date" readonly="state != 'draft'"/>
                             <field name="ref" string="Memo"/>
                             <field name="receiptbook_id" invisible="is_internal_transfer or not use_payment_pro" readonly="state != 'draft'" required="state == 'draft'" options="{'no_create': True}"/>
-                            <field name="retencion_ganancias" position="attributes">
-                                <attribute name="required">False</attribute>
-                                <attribute name="invisible">True</attribute>
-                            </field>
-                            <field name="regimen_ganancias_id" position="attributes">
-                                <attribute name="required">False</attribute>
-                                <attribute name="invisible">True</attribute>
-                            </field>
-                            <field name="company_regimenes_ganancias_ids" required="False" invisible="True"/>
+                            <label for="retencion_ganancias" string="Ret G." invisible="not company_regimenes_ganancias_ids"/>
+                            <field name="company_regimenes_ganancias_ids" invisible="True"/>
+                            <div invisible="not company_regimenes_ganancias_ids" class="o_row">
+                                <field name="retencion_ganancias" readonly="state not in ['draft']" required="company_regimenes_ganancias_ids and state == 'draft'"/>
+                                <field name="regimen_ganancias_id" readonly="state not in ['draft']" invisible="retencion_ganancias != 'nro_regimen'" required="retencion_ganancias == 'nro_regimen' and company_regimenes_ganancias_ids and state == 'draft'" domain="[('id', 'in', company_regimenes_ganancias_ids)]" options="{'no_open': True, 'no_create': True}"/>
+                            </div>
                         </group>
                         <group>
                             <field name="cashbox_session_id" domain="[('state', '=', 'opened'), ('company_id', '=', company_id), '|', ('user_ids', '=', uid), ('user_ids', '=', False)]" required="requiere_account_cashbox_session and state == 'draft'" readonly="state != 'draft'"/>
