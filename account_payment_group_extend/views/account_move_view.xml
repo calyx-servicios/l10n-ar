@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="account_move_form_view_inherit" model="ir.ui.view">
+        <field name="name">account.move.form.view.inherit</field>
+        <field name="model">account.move</field>
+        <field name="priority" eval="40"/>
+        <field name="inherit_id" ref="account.view_move_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//button[@id='account_invoice_payment_btn']" position="replace">
+                <field name="uses_account_payment_group" invisible="True"/>
+                <button
+                    name="action_register_payment" id="account_invoice_payment_btn"
+                    type="object" class="oe_highlight"
+                    invisible="(state != 'posted' or payment_state not in ('not_paid', 'partial') or move_type not in ('out_invoice', 'out_refund', 'in_invoice', 'in_refund', 'out_receipt', 'in_receipt')) or uses_account_payment_group"
+                    context="{'dont_redirect_to_payments': True, 'display_account_trust': True}"
+                    string="Registrar pago"
+                    groups="account.group_account_invoice"
+                />
+                <button
+                    name="action_account_invoice_payment_group"
+                    id="account_invoice_payment_btn"
+                    type="object"
+                    class="oe_highlight"
+                    invisible="(state != 'posted' or payment_state not in ('partial', 'not_paid') or move_type not in ('out_invoice', 'out_refund', 'in_invoice', 'in_refund', 'out_receipt', 'in_receipt') or authorized_transaction_ids) or not uses_account_payment_group" context="{'dont_redirect_to_payments': True, 'display_account_trust': True}"
+                    string="Registrar pago"
+                />
+            </xpath>
+        </field>
+    </record>
+
+</odoo>

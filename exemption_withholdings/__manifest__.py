@@ -17,12 +17,12 @@
         'base',
         'l10n_ar_account_withholding',
         'account_payment_group',
-        'account_withholding_automatic',
+        'l10n_ar_withholding_automatic'
     ],
     "data": [
         'security/ir.model.access.csv',
         'views/res_partner_view.xml',
         'views/exemption_withholding_view.xml',
-        'views/payment_view.xml',
+        # 'views/payment_view.xml',
     ],
 }

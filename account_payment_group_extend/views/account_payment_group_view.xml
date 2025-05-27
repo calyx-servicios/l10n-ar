@@ -1,0 +1,143 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="account_payment_group_form_inherit" model="ir.ui.view">
+        <field name="name">account.payment.group.form.inherit</field>
+        <field name="model">account.payment.group</field>
+        <field name="inherit_id" ref="account_payment_group.view_account_payment_group_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//button[@name='post']" position="after">
+                <button name="compute_withholdings" class="oe_highlight" string="Calcular retenciones" type="object" invisible="state != 'draft' or partner_type != 'supplier'"/>
+            </xpath>
+            <field name="payment_difference" position="after">
+                <field name="move_id"/>
+            </field>
+            <xpath expr="//field[@name='debt_move_line_ids']/.." position="replace"/>
+            <xpath expr="//field[@name='payment_ids']/.." position="after">
+                <page string="Retenciones">
+                    <field name="l10n_ar_withholding_line_ids" invisible="partner_type != 'customer'" nolabel="1" colspan="2" readonly="state != 'draft'">
+                        <tree editable="bottom">
+                            <field name="withholding_sequence_id" column_invisible="True"/>
+                            <field name="company_id" column_invisible="True"/>
+                            <field name="currency_id" column_invisible="True"/>
+                            <field name="tax_id" options="{'no_open': True, 'no_create': True}" domain="[('l10n_ar_withholding_payment_type', '=', 'customer')]"/>
+                            <field name="name" readonly="withholding_sequence_id"/>
+                            <field name="base_amount" required="True"/>
+                            <field name="amount" required="True"/>
+                            <button name="%(l10n_ar_withholding_ux.action_report_withholding_certificate)d" icon="fa-print " title="Print withholding voucher" type="action" invisible="parent.partner_type != 'supplier' or parent.state == 'draft'"/>
+                            <button type="object" name="get_formview_action" icon="fa-pencil-square-o" title="open" help="Open"/>
+                        </tree>
+                    </field>
+                    <field name="l10n_ar_withholding_line_ids" invisible="partner_type != 'supplier'" nolabel="1" colspan="2" readonly="state != 'draft'">
+                        <tree editable="bottom">
+                            <field name="withholding_sequence_id" column_invisible="True"/>
+                            <field name="company_id" column_invisible="True"/>
+                            <field name="currency_id" column_invisible="True"/>
+                            <field name="tax_id" options="{'no_open': True, 'no_create': True}" domain="[('l10n_ar_withholding_payment_type', '=', 'supplier')]"/>
+                            <field name="name" readonly="withholding_sequence_id"/>
+                            <field name="base_amount" required="True"/>
+                            <field name="amount" required="True"/>
+                            <button name="%(l10n_ar_withholding_ux.action_report_withholding_certificate)d" icon="fa-print " title="Print withholding voucher" type="action" invisible="parent.partner_type != 'supplier' or parent.state == 'draft'"/>
+                            <button type="object" name="get_formview_action" icon="fa-pencil-square-o" title="open" help="Open"/>
+                        </tree>
+                    </field>
+                </page>
+            </xpath>
+            <xpath expr="//field[@name='payment_ids']" position="inside">
+                <form>
+                    <header>
+                        <button name="action_post" string="Confirmar" type="object" class="oe_highlight" invisible="state != 'draft'" data-hotkey="q"/>
+                        <button name="action_draft" string="Pasar a borrador" type="object" class="btn btn-secondary" invisible="not show_reset_to_draft_button" data-hotkey="w"/>
+                        <field name="state" widget="statusbar" statusbar_visible="draft,posted"/>
+                    </header>
+                    <div class="oe_title">
+                        <h1 invisible="state != 'draft'">
+                            <span>Borrador</span>
+                        </h1>
+                        <h1 invisible="state == 'draft'">
+                            <field name="name" readonly="True"/>
+                        </h1>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="payment_type" widget="radio" options="{'horizontal': True}" readonly="state != 'draft'"/>
+                            <field name="company_id" options="{'no_create': True}" domain="[('id', 'in', allowed_company_ids)]" readonly="state != 'draft' or context.get('default_company_id')"/>
+                            <field name="partner_type" invisible="True"/>
+                            <field name="is_internal_transfer" invisible="True"/>
+                            <field name="show_partner_bank_account" invisible="True"/>
+                            <field name="show_reset_to_draft_button" invisible="True"/>
+                            <field name="payment_method_code" invisible="True"/>
+                            <field name="use_payment_pro" invisible="True"/>
+                            <field name="requiere_account_cashbox_session" invisible="True"/>
+                            <field name="available_journal_ids" invisible="True"/>
+                            <field name="available_payment_method_line_ids" invisible="True"/>
+                            <field name="available_partner_bank_ids" invisible="True"/>
+                            <field name="currency_id" invisible="True"/>
+                            <field name="other_currency" invisible="True"/>
+                            <field name="require_partner_bank_account" invisible="True"/>
+                            <field name="partner_id" context="{'default_is_company': True}" string="Cliente" options="{'no_quick_create': True}" invisible="partner_type != 'customer' or is_internal_transfer" readonly="state != 'draft' or context.get('default_company_id')"/>
+                            <field name="l10n_ar_partner_vat" invisible="state != 'draft' or not l10n_ar_partner_vat or is_internal_transfer or (not show_partner_bank_account and payment_method_code not in ['out_third_party_checks', 'check_printing'])"/>
+                            <field name="date" readonly="state != 'draft'"/>
+                            <field name="ref" string="Memo"/>
+                            <field name="receiptbook_id" invisible="is_internal_transfer or not use_payment_pro" readonly="state != 'draft'" required="state == 'draft'" options="{'no_create': True}"/>
+                            <field name="retencion_ganancias" position="attributes">
+                                <attribute name="required">False</attribute>
+                                <attribute name="invisible">True</attribute>
+                            </field>
+                            <field name="regimen_ganancias_id" position="attributes">
+                                <attribute name="required">False</attribute>
+                                <attribute name="invisible">True</attribute>
+                            </field>
+                            <field name="company_regimenes_ganancias_ids" required="False" invisible="True"/>
+                        </group>
+                        <group>
+                            <field name="cashbox_session_id" domain="[('state', '=', 'opened'), ('company_id', '=', company_id), '|', ('user_ids', '=', uid), ('user_ids', '=', False)]" required="requiere_account_cashbox_session and state == 'draft'" readonly="state != 'draft'"/>
+                            <field name="journal_id" domain="[('id', 'in', available_journal_ids)]" readonly="state != 'draft'"/>
+                            <field name="payment_method_line_id" options="{'no_create': True, 'no_open': True}" required="True" readonly="state != 'draft'"/>
+                            <field name="l10n_latam_manual_checks" invisible="True"/>
+                            <field name="payment_method_code" invisible="True"/>
+                            <field name="destination_journal_id" invisible="True"/>
+                            <field name="l10n_latam_check_id" invisible="payment_method_code not in ['in_third_party_checks', 'out_third_party_checks'] and not l10n_latam_check_id" readonly="state != 'draft'" required="payment_method_code in ['in_third_party_checks', 'out_third_party_checks']" domain="[('payment_method_code', '=', 'new_third_party_checks'), ('l10n_latam_check_current_journal_id', '=', journal_id), ('state', '=', 'posted'), ('company_id', '=', company_id)] if payment_type == 'outbound' else [('payment_method_code', '=', 'new_third_party_checks'), ('l10n_latam_check_current_journal_id', '=', destination_journal_id), ('state', '=', 'posted'), ('company_id', '=', company_id)] if is_internal_transfer else [('payment_method_code', '=', 'new_third_party_checks'), ('l10n_latam_check_current_journal_id', '=', False), ('state', '=', 'posted'), ('company_id', '=', company_id)]" context="{'search_view_ref': 'l10n_latam_check.view_account_payment_third_party_checks_search'}" options="{'no_create': True}"/> 
+                            <field name="l10n_latam_check_number" string="Número de Cheque" invisible="payment_method_code != 'new_third_party_checks' and (payment_method_code != 'check_printing' or not l10n_latam_manual_checks)" readonly="state != 'draft'" required="payment_method_code == 'new_third_party_checks' or (payment_method_code == 'check_printing' and l10n_latam_manual_checks)"/>
+                            <field name="l10n_latam_check_payment_date" invisible="payment_method_code != 'new_third_party_checks' and (payment_method_code != 'check_printing' or not l10n_latam_manual_checks)" readonly="state != 'draft'"/>
+                            <field name="l10n_latam_check_bank_id" string="Banco del Cheque" invisible="payment_method_code != 'new_third_party_checks'" readonly="state in ['cancel', 'posted']"/>
+                            <field name="l10n_latam_check_issuer_vat" string="CUIT Emisor del Cheque" invisible="payment_method_code != 'new_third_party_checks'" readonly="state in ['cancel', 'posted']"/>
+                            <label for="l10n_latam_check_current_journal_id" string="Diario del Cheque" invisible="state != 'posted' or payment_method_code != 'new_third_party_checks'"/>
+                            <div class="oe_inline" invisible="state != 'posted' or payment_method_code != 'new_third_party_checks'">
+                                <field name="l10n_latam_check_current_journal_id"/>
+                                <span invisible="l10n_latam_check_current_journal_id">Not en monedero</span>
+                                <button name="button_open_check_operations" type="object" string="⇒ Operaciones del Cheque" class="oe_link"/>
+                            </div>
+
+
+                            <field name="partner_bank_id" string="Cuenta bancaria del cliente" context="{'default_partner_id': partner_id, 'display_account_trust': True}" invisible="not show_partner_bank_account or partner_type != 'customer' or is_internal_transfer or payment_type == 'inbound'" required="require_partner_bank_account and not is_internal_transfer"/>
+                            <field name="partner_bank_id" string="Cuenta bancaria de proveedor" context="{'default_partner_id': partner_id, 'display_account_trust': True}" invisible="not show_partner_bank_account or partner_type != 'supplier' or is_internal_transfer or payment_type == 'inbound'" required="require_partner_bank_account and not is_internal_transfer"/>
+                            <field name="partner_bank_id" string="Cuenta bancaria de la empresa" context="{'default_partner_id': partner_id, 'display_account_trust': True}" invisible="not show_partner_bank_account or is_internal_transfer or payment_type == 'outbound'" required="require_partner_bank_account and not is_internal_transfer"/>
+                            <field name="amount" readonly="state != 'draft'"/>
+                            <field name="counterpart_currency_amount" invisible="True"/>
+                            <label for="counterpart_currency_amount" string="Secondary Currency" invisible="other_currency or is_internal_transfer or not use_payment_pro"/>
+                            <div name="counterpart_currency_amount" class="o_row" invisible="other_currency or is_internal_transfer or not use_payment_pro">
+                                <field name="counterpart_currency_id" nolabel="True" domain="[('id', '!=', currency_id)]" options="{'no_create': True, 'no_open': True}" readonly="state != 'draft'"/>
+                                Rate = <field name="counterpart_exchange_rate" readonly="state != 'draft'"/>
+                            </div>
+                            <label for="payment_total" readonly="state != 'draft'" invisible="is_internal_transfer or not use_payment_pro"/>
+                            <div name="payment_total" invisible="is_internal_transfer or not use_payment_pro">
+                                <field name="payment_total" class="oe_inline"/>
+                                <span invisible="state != 'draft'" class="text-muted"> (diferencia <field name="payment_difference" class="oe_inline"/>)</span>
+                            </div>
+                        </group>
+                    </group>
+                </form>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="account_payment_group.action_account_payments_group" model="ir.actions.act_window">
+        <field name="context">{'default_partner_type': 'customer', 'search_default_not_cancelled': 1, 'hide_line_witholding': True}</field>
+    </record>
+
+    <record id="account_payment_group.action_account_payments_group_payable" model="ir.actions.act_window">
+        <field name="context">{'default_partner_type': 'supplier', 'search_default_not_cancelled': 1}</field>
+    </record>
+
+</odoo>
