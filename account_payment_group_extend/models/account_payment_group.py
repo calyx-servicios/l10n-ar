@@ -118,16 +118,14 @@ class AccountPaymentGroup(models.Model):
                         if rec.partner_type == "supplier":
                             credit = True
                             debit = False
-                            account = witholding.tax_id.invoice_repartition_line_ids.filtered(lambda x: x.account_id)
-                            if not account:
-                                continue
                         elif rec.partner_type == "customer":
                             debit = True
                             credit = False
-                            account = witholding.tax_id.refund_repartition_line_ids.filtered(lambda x: x.account_id)
-                            if not account:
-                                continue
-                        account = account[0].account_id.id
+                        account = witholding.account_id
+                        if not account:
+                            raise ValidationError(
+                                "En cada linea de retenciones es obligatorio que contenga un impuesto asociado"
+                            )
                         AML.create([{
                             "payment_group_id": rec.id,
                             "name": witholding.name,
