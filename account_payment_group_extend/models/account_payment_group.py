@@ -84,9 +84,8 @@ class AccountPaymentGroup(models.Model):
                 'signed_amount_company_currency'))
             rec.payments_amount = payments_amount + sum(rec.l10n_ar_withholding_line_ids.mapped("amount"))
 
-    @api.constrains("l10n_ar_withholding_line_ids")
+    @api.constrains("l10n_ar_withholding_line_ids", "payment_ids")
     def _set_retention_move_line_ids(self):
-
         AM = self.env["account.move"]
         AML = self.env["account.move.line"]
         for rec in self:
@@ -124,7 +123,9 @@ class AccountPaymentGroup(models.Model):
                         account = witholding.account_id
                         if not account:
                             raise ValidationError(
-                                "En cada linea de retenciones es obligatorio que contenga un impuesto asociado"
+                                "En cada linea de retenciones es obligatorio que contenga una cuenta asociada.\n"
+                                "La misma esta asociada dentro de la configuración del impuesto.\n"
+                                "Impuesto %s" % witholding.tax_id.name
                             )
                         AML.create([{
                             "payment_group_id": rec.id,
