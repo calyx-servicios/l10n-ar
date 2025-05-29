@@ -127,6 +127,7 @@ class AccountPaymentGroup(models.Model):
                                 "La misma esta asociada dentro de la configuración del impuesto.\n"
                                 "Impuesto %s" % witholding.tax_id.name
                             )
+                        account = account.id
                         AML.create([{
                             "payment_group_id": rec.id,
                             "name": witholding.name,
