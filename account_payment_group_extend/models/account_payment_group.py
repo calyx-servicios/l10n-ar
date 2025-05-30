@@ -109,7 +109,8 @@ class AccountPaymentGroup(models.Model):
                 move = AM.create({
                     "ref": name,
                     "company_id": rec.company_id.id,
-                    "partner_id": rec.partner_id.id if rec.partner_id else False
+                    "partner_id": rec.partner_id.id if rec.partner_id else False,
+                    "date": rec.payment_date
                 })
                 for witholding in rec.l10n_ar_withholding_line_ids:
                     if witholding.tax_id:
@@ -135,7 +136,8 @@ class AccountPaymentGroup(models.Model):
                             "credit": amount if credit else 0,
                             "debit": amount if debit else 0,
                             "account_id": account,
-                            "partner_id": rec.partner_id.id if rec.partner_id else False
+                            "partner_id": rec.partner_id.id if rec.partner_id else False,
+                            "date": rec.payment_date
                         }, {
                             "payment_group_id": rec.id,
                             "name": witholding.name,
@@ -143,7 +145,8 @@ class AccountPaymentGroup(models.Model):
                             "credit": amount if debit else 0,
                             "debit": amount if credit else 0,
                             "account_id": destination_account.id,
-                            "partner_id": rec.partner_id.id if rec.partner_id else False
+                            "partner_id": rec.partner_id.id if rec.partner_id else False,
+                            "date": rec.payment_date
                         }])
                         if rec.company_id and rec.company_id.l10n_ar_tax_base_account_id:
                             imponible_id = rec.company_id.l10n_ar_tax_base_account_id.id
@@ -155,7 +158,8 @@ class AccountPaymentGroup(models.Model):
                                 "credit": base_amount if credit else 0,
                                 "debit": base_amount if debit else 0,
                                 "account_id": imponible_id,
-                                "partner_id": rec.partner_id.id if rec.partner_id else False
+                                "partner_id": rec.partner_id.id if rec.partner_id else False,
+                                "date": rec.payment_date
                             }, {
                                 "payment_group_id": rec.id,
                                 "name": witholding.name,
@@ -163,7 +167,8 @@ class AccountPaymentGroup(models.Model):
                                 "credit": base_amount if debit else 0,
                                 "debit": base_amount if credit else 0,
                                 "account_id": imponible_id,
-                                "partner_id": rec.partner_id.id if rec.partner_id else False
+                                "partner_id": rec.partner_id.id if rec.partner_id else False,
+                                "date": rec.payment_date
                             }])
     def button_journal_entries(self):
         res = super().button_journal_entries()
