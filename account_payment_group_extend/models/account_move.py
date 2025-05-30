@@ -17,13 +17,20 @@ class AccountMove(models.Model):
                 sequence = self.env["ir.sequence"].browse(sequence_id)
                 sequence.use_date_range = False
                 if not sequence.use_date_range:
+                    date = False
+                    if "invoice_date" in vals:
+                        date = vals["invoice_date"]
+                    elif "date" in vals:
+                        date = vals["date"]
+                    if not date:
+                        continue
                     sequence.prefix = code
                     if "name" not in vals:
-                        vals["name"] = sequence.with_context(ir_sequence_date=vals["date"]).next_by_id(sequence_id)
+                        vals["name"] = sequence.with_context(ir_sequence_date=date).next_by_id(sequence_id)
                     else:
                         try:
                             if vals["name"]  not in vals["name"]:
-                                vals["name"] = sequence.with_context(ir_sequence_date=vals["date"]).next_by_id(sequence_id)
+                                vals["name"] = sequence.with_context(ir_sequence_date=date).next_by_id(sequence_id)
                         except Exception:
                             pass
                     move = True
@@ -32,7 +39,7 @@ class AccountMove(models.Model):
                         while move:
                             move = self.search([("name", "=", name), ("journal_id", "=", vals["journal_id"])])
                             if move:
-                                name = sequence.with_context(ir_sequence_date=vals["date"]).next_by_id(sequence_id)
+                                name = sequence.with_context(ir_sequence_date=date).next_by_id(sequence_id)
                         vals["name"] = name
                     except Exception:
                         vals["name"] = name
