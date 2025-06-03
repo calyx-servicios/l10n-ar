@@ -242,7 +242,7 @@ class AccountPayment(models.Model):
         if self.mapped('open_move_line_ids'):
             return res + ('force_amount_company_currency',)
         return res
-    
+
     @api.depends_context('default_is_internal_transfer')
     def _compute_is_internal_transfer(self):
         """ Este campo se recomputa cada vez que cambia un diario y queda en False porque el segundo diario no va a
@@ -267,5 +267,5 @@ class AccountPayment(models.Model):
                 rec.label_destination_journal_id = "Diario de destino"
             else:
                 rec.label_journal_id = "Diario de destino"
-                rec.label_destination_journal_id = "Diario de origen"       
-    
+                rec.label_destination_journal_id = "Diario de origen"
+

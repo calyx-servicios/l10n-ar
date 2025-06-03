@@ -132,8 +132,8 @@
 						<td><span t-field="p.withholding_number"/></td>
 				</t>
 				<td><span t-if="p.payment_method_line_id" t-field="p.payment_method_line_id"/>
-					<t t-foreach="p.check_ids" t-as="c">
-						(<span t-field="c.name"/> - <span t-field="c.payment_date"/>)|
+					<t t-if="p.payment_method_line_id.code == 'new_third_party_checks'">
+						(<span t-field="p.name"/> - <span t-field="p.payment_date"/>)|
 					</t>
 				</td>								
 				<!--Agregado-->							
