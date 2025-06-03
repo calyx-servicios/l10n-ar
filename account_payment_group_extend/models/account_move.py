@@ -14,7 +14,7 @@ class AccountMove(models.Model):
                 journal = self.env["account.journal"].browse(vals["journal_id"])
                 code = journal.code
                 sequence_id = journal.sequence
-                sequence = self.env["ir.sequence"].browse(sequence_id)
+                sequence = self.env["ir.sequence"].browse(sequence_id).sudo()
                 sequence.use_date_range = False
                 if not sequence.use_date_range:
                     date = False
