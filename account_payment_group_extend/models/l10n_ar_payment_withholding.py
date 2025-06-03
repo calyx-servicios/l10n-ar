@@ -33,8 +33,8 @@ class l10nArPaymentRegisterWithholding(models.Model):
                     account = rec.tax_id.invoice_repartition_line_ids.filtered(lambda x: x.account_id)
                 elif partner_type == "customer":
                     account = rec.tax_id.refund_repartition_line_ids.filtered(lambda x: x.account_id)
-                    if account:
-                        rec.account_id = account[0].account_id.id
+                if account:
+                    rec.account_id = account[0].account_id.id
 
     @api.onchange("payment_group_id", "payment_id")
     def _compute_currency_id(self):
