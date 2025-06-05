@@ -15,6 +15,8 @@ class AccountMove(models.Model):
                 code = journal.code
                 sequence_id = journal.sequence
                 sequence = self.env["ir.sequence"].browse(sequence_id).sudo()
+                if not sequence.exists():
+                    continue
                 sequence.use_date_range = False
                 if not sequence.use_date_range:
                     date = False
