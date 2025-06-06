@@ -1,6 +1,6 @@
 {
     "name": "Extension de Grupos de Pago con Múltiples Métodos",
-    "version": "17.0.1.0.17",
+    "version": "17.0.1.0.18",
     "category": "Accounting",
     "author": "Felipe Carlini",
     "license": "AGPL-3",
@@ -16,6 +16,7 @@
         "views/account_payment_group_view.xml",
         "views/account_move_view.xml",
         "views/account_payment_view.xml",
-        "views/res_company_view.xml"
+        "views/res_company_view.xml",
+        "views/report_withholding_certificate_templates.xml"
     ],
 }

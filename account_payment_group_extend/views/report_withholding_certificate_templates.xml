@@ -1,0 +1,151 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <template id="report_withholding_certificate_document_inherit" inherit_id="l10n_ar_withholding_ux.report_withholding_certificate_document">
+        <xpath expr="//t[@t-call='web.external_layout']" position="replace">
+            <t t-call="web.external_layout">
+                <t t-set="o" t-value="o.with_context(lang=lang)" />
+                    <t t-if="o.payment_group_id">
+                        <t t-set="date" t-value="o.payment_group_id.payment_date"/>
+                        <t t-set="partner_id" t-value="o.payment_group_id.partner_id"/>
+                        <t t-set="name" t-value="o.payment_group_id.name"/>
+                    </t>
+                    <t t-else="">
+                        <t t-set="date" t-value="o.payment_id.date"/>
+                        <t t-set="partner_id" t-value="o.payment_id.partner_id"/>
+                        <t t-set="name" t-value="o.payment_id.name"/>
+                    </t>
+                    <t t-set="report_number" t-value="'/'"/>
+                    <t t-if="o.name">
+                        <t t-set="report_number" t-value="o.name"/>
+                    </t>
+                    <t t-set="company_id" t-value="o.company_id"/>
+                    <t t-if="o.payment_group_id">
+                        <t t-set="company_id" t-value="o.payment_group_id.company_id"/>
+                    </t>
+
+                    <t t-set="custom_header" t-value="'l10n_ar.custom_header'"/>
+                    <t t-set="report_date" t-value="date"/>
+                    <t t-set="report_number" t-value="report_number"/>
+                    <t t-set="report_name" t-value="'CERTIFICADO DE RETENCIÓN'"/>
+                    <t t-set="header_address" t-value="company_id.partner_id"/>
+
+                    <t t-set="custom_footer">
+                        <div class="row">
+                            <t t-if="not company_id.l10n_ar_report_signature">
+                                <div name="footer_left_column" class="col-8">
+                                    Nombre y Apellido Firmante:
+                                    <br/>Cargo:
+                                </div>
+                                <div name="footer_right_column" class="col-4">
+                                    Firma Responsable
+                                </div>
+                            </t>
+                        </div>
+                    </t>
+                <div class="page">
+                    <div id="informations" class="row mt8 mb8">
+                        <div class="col-6">
+
+                            <!-- IDENTIFICACION (ADQUIRIENTE-LOCATARIO-PRESTARIO) -->
+
+                            <!-- (14) Apellido uy Nombre: Denominicacion o Razon Soclial -->
+                            <strong>Cliente: </strong><span t-field="partner_id.name"/>
+
+                            <!-- (15) Domicilio Comercial -->
+                            <br/>
+                            <span t-out="partner_id" t-options='{"widget": "contact", "fields": ["address"], "no_marker": True, "no_tag_br": True}'/>
+
+                            <!-- (16) Responsabilidad AFIP -->
+                            <strong>Cond. IVA: </strong><span t-field="partner_id.l10n_ar_afip_responsibility_type_id"/>
+
+                            <!-- (17) CUIT -->
+                            <t t-if="partner_id.vat and partner_id.l10n_latam_identification_type_id.name and partner_id.l10n_latam_identification_type_id.name != 'Sigd'">
+                                <br/><strong><t t-out="partner_id.l10n_latam_identification_type_id.name or company_id.country_id.vat_label" id="inv_tax_id_label"/>:</strong> <span t-out="partner_id.l10n_ar_formatted_vat or partner_id.vat"/>
+                            </t>
+
+                        </div>
+                    </div>
+                    <table class="table table-sm o_main_table">
+                        <thead>
+                            <tr>
+                                <th class="text-center" colspan="2"><strong>Datos de la retención practicada</strong></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td style="width: 50%;" class="text-right">
+                                    Impuesto:
+                                </td>
+                                <td class="text-left">
+                                    <span t-field="o.tax_id.description"/>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="text-right">
+                                    Régimen / Descripción:
+                                </td>
+                                <td class="text-left">
+                                    <span t-field="o.ref"/>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="text-right">
+                                    Comprobante que origina la retención:
+                                </td>
+                                <td class="text-left">
+                                    <span t-esc="report_number"/>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="text-right">
+                                    Importe del comprobante que origina la retención:
+                                </td>
+                                <td class="text-left">
+                                    <t t-if="o.currency_id">
+                                        <span t-field="o.base_amount"/>
+                                    </t>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="text-right">
+                                    Importe de la retención:
+                                </td>
+                                <td class="text-left">
+                                    <t t-if="o.currency_id">
+                                        <span t-field="o.amount"/>
+                                    </t>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <table>
+                        <div class="float-left"/>
+                        <div class="float-right" style="heigth:100px;width:200px;text-align:center;">
+                            <t t-if="company_id.l10n_ar_report_signature">
+                                <span t-field="company_id.l10n_ar_report_signature" t-options='{"widget": "image"}'/>
+                                <span t-field="company_id.l10n_ar_report_signed_by"/>
+                            </t>
+                        </div>
+                  </table>
+                </div>
+            </t>
+        </xpath>
+    </template>
+
+    <template id="report_withholding_certificate_inherit" inherit_id="l10n_ar_withholding_ux.report_withholding_certificate">
+        <xpath expr="//t[@t-call='web.html_container']" position="replace">
+            <t t-call="web.html_container">
+                <t t-foreach="docs" t-as="o">
+                    <t t-set="partner_id" t-value="o.payment_id.partner_id"/>
+                    <t t-if="o.payment_group_id">
+                        <t t-set="partner_id" t-value="o.payment_group_id.partner_id"/>
+                    </t>
+                    <t t-set="lang" t-value="partner_id.lang"/>
+                    <t t-call="l10n_ar_withholding_ux.report_withholding_certificate_document" t-lang="lang"/>
+                </t>
+            </t>
+        </xpath>
+    </template>
+
+</odoo>
