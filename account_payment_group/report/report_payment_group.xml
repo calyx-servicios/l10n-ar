@@ -133,7 +133,7 @@
 				</t>
 				<td><span t-if="p.payment_method_line_id" t-field="p.payment_method_line_id"/>
 					<t t-if="p.payment_method_line_id.code == 'new_third_party_checks'">
-						(<span t-field="p.name"/> - <span t-field="p.payment_date"/>)|
+						(<span t-field="p.name"/> - <span t-field="p.date"/>)|
 					</t>
 				</td>								
 				<!--Agregado-->							
