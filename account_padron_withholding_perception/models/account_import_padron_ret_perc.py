@@ -124,9 +124,12 @@ class AccountImportPadronRetPerc(models.Model):
 
         # filtros de cuit
         where = ' where col5 in ('
-        for partner in partner_dic:
-            where += str(partner) + ','
-        where = where[:-1] + ') '
+        if partner_dic:
+            for partner in partner_dic:
+                where += str(partner) + ','
+            where = where[:-1] + ') '
+        else:
+            where = where + '\'-1\') '
         # filtros de fechas que se comenta hasta que este bien la base de datos
         # importada
         # if date_to and date_from:
@@ -298,9 +301,12 @@ class AccountImportPadronRetPerc(models.Model):
 
         # filtros de cuit
         where = ' where col4 in ('
-        for partner in partner_dic:
-            where += str(partner) + ','
-        where = where[:-1] + ') '
+        if partner_dic:
+            for partner in partner_dic:
+                where += str(partner) + ','
+            where = where[:-1] + ') '
+        else:
+            where = where + '\'-1\') '
         # filtros de fechas
         if False:  # date_to and date_from:
             date_to_string = str(date_to)[8:10] + \
