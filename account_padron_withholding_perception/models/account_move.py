@@ -7,7 +7,7 @@ class AccountMove(models.Model):
 
     def action_account_invoice_payment_group(self):
         self.ensure_one()
-        if self.state != 'cancel':
+        if self.state != 'posted':
             raise ValidationError(_(
                 'You can only register payment if invoice is open'))
         return {
@@ -62,7 +62,7 @@ class AccountMove(models.Model):
                 tax_present = any(tax.id == padron_type_obj.account_tax_perception_id.id for tax in lines.tax_ids)
                 if not tax_present:
                     lines.tax_ids = [(4, padron_type_obj.account_tax_perception_id.id)]
-                    
+
         if list_id_delete:
             for lines in self.invoice_line_ids:
                 invoice_lines.append((0, 0, {

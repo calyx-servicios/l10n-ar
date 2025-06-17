@@ -45,7 +45,7 @@ class AccountMove(models.Model):
 
     def action_account_invoice_payment_group(self):
         self.ensure_one()
-        if self.state != 'open':
+        if self.state != 'posted':
             raise ValidationError(_(
                 'You can only register payment if invoice is open'))
         return {
