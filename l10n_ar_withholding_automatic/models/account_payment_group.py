@@ -24,13 +24,13 @@ class AccountPaymentGroup(models.Model):
         help='Esta campo se utiliza para pagos adelantados, el cual selecciona al tipo de deduccion que se le hara al total del pago para luego hacer el calculo de retencion. Solo aplicable cuando el pago no tiene una o varias facturas asociadas',
         default='iva21'
     )
-    # retencion_ganancias = fields.Selection([
-    #     ('imposibilidad_retencion', 'Imposibilidad de Retención'),
-    #     ('no_aplica', 'No Aplica'),
-    #     ('nro_regimen', 'Nro de Régimen'),
-    # ],
-    #     'Retención Ganancias',
-    # )
+    retencion_ganancias = fields.Selection([
+        ('imposibilidad_retencion', 'Imposibilidad de Retención'),
+        ('no_aplica', 'No Aplica'),
+        ('nro_regimen', 'Nro de Régimen'),
+    ],
+        'Retención Ganancias',
+    )
     regimen_ganancias_id = fields.Many2one(
         'afip.tabla_ganancias.alicuotasymontos',
         'Régimen Ganancias',

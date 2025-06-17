@@ -29,7 +29,7 @@ class AccountPaymentGroup(models.Model):
     withholdable_advanced_amount = fields.Float(
         compute="_compute_wiholding_fields"
     )
-    retencion_ganancias = fields.Char(
+    retencion_ganancias = fields.Selection(
         compute="_compute_wiholding_fields"
     )
     regimen_ganancias_id = fields.Many2one(
