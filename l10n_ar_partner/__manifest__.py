@@ -15,9 +15,9 @@ Datos Extras para Contacto de Argentina
     """,
     'author': 'Codize, Exemax',
     'website': 'http://www.codize.ar',
-    'depends': ['base', 'account','l10n_ar'],
+    'depends': ['base', 'account','l10n_ar', 'l10n_ar_ux'],
     'data': [
-        'data/depart_data.xml', 
+        'data/depart_data.xml',
         'data/localidad_data.xml',
         'views/partner_view.xml',
         'security/ir.model.access.csv',

@@ -20,17 +20,17 @@ class AccountPaymentGroup(models.Model):
         ('iva21', 'IVA 21%'),
         ('iva10', 'IVA 10,5%'),
         ('none', 'Ninguna'),
-    ], 'Deduccion de total a pagar', 
+    ], 'Deduccion de total a pagar',
         help='Esta campo se utiliza para pagos adelantados, el cual selecciona al tipo de deduccion que se le hara al total del pago para luego hacer el calculo de retencion. Solo aplicable cuando el pago no tiene una o varias facturas asociadas',
         default='iva21'
     )
-    retencion_ganancias = fields.Selection([
-        ('imposibilidad_retencion', 'Imposibilidad de Retención'),
-        ('no_aplica', 'No Aplica'),
-        ('nro_regimen', 'Nro de Régimen'),
-    ],
-        'Retención Ganancias',
-    )
+    # retencion_ganancias = fields.Selection([
+    #     ('imposibilidad_retencion', 'Imposibilidad de Retención'),
+    #     ('no_aplica', 'No Aplica'),
+    #     ('nro_regimen', 'Nro de Régimen'),
+    # ],
+    #     'Retención Ganancias',
+    # )
     regimen_ganancias_id = fields.Many2one(
         'afip.tabla_ganancias.alicuotasymontos',
         'Régimen Ganancias',
@@ -94,7 +94,7 @@ class AccountPaymentGroup(models.Model):
                 ('company_id', '=', rec.company_id.id),
             ]).create_payment_withholdings(rec)
 
-            # Busco en las lineas de pago cual es el pago de retencion para luego cambiarle en su asiento contable la cuenta, 
+            # Busco en las lineas de pago cual es el pago de retencion para luego cambiarle en su asiento contable la cuenta,
             # esto lo hacemos porque por defecto toma la cuenta del diario y queremos que tome la cuenta configurada en el impuesto
             _imp_ret_ganancias = self.env['account.tax'].search([('withholding_type','=','tabla_ganancias')],limit=1)
             line_ret = rec.payment_ids.filtered(lambda r: r.tax_withholding_id.id == _imp_ret_ganancias.id)
