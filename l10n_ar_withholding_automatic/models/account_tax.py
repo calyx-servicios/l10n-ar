@@ -191,9 +191,9 @@ class AccountTax(models.Model):
         base_amount = vals['withholdable_base_amount']
 
         if self.withholding_type == 'partner_tax':
-            amount = base_amount * (alicuota)
+            amount = base_amount * (alicuota.alicuota_retencion)
             vals['comment'] = "%s x %s" % (
-                base_amount, alicuota)
+                base_amount, alicuota.alicuota_retencion)
             vals['period_withholding_amount'] = amount
         elif self.withholding_type == 'tabla_ganancias':
             regimen = payment_group.regimen_ganancias_id
@@ -307,7 +307,7 @@ class AccountTax(models.Model):
 
                     amount += (escala.porcentaje / 100.0) * (
                         base_amount - importe_excedente)
-                    
+
                     vals['period_withholding_amount'] = amount
 
                     vals['comment'] = "%s + (%s x %s)" % (
@@ -413,7 +413,7 @@ class AccountTax(models.Model):
             vals.pop('comment')
             if payment_withholding:
                 payment_withholding.unlink()
-            
+
             payment_method = self.env.ref(
                 'l10n_ar_withholding_automatic.'
                 'account_payment_method_out_withholding')
