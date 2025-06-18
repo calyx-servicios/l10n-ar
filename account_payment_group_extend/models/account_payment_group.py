@@ -192,9 +192,10 @@ class AccountPaymentGroup(models.Model):
 
     def compute_withholdings(self):
         for rec in self:
-            rec._compute_withholdings()
-            rec._set_retention_move_line_ids()
-            rec._set_witholding_lines_asset_state()
+            if rec.payment_ids:
+                rec._compute_withholdings()
+                rec._set_retention_move_line_ids()
+                rec._set_witholding_lines_asset_state()
 
     def _compute_withholdings(self):
         if self.partner_type != 'supplier':
