@@ -297,3 +297,78 @@ class AccountPaymentGroup(models.Model):
                 withholdable_advanced_amount = \
                     self.withholdable_advanced_amount
         return (withholdable_advanced_amount, withholdable_invoiced_amount)
+
+
+    # def post(self):
+    #     # hacemos el post de super, y si hay retenciones en l10n_ar_withholding_line_ids, hay que tomarlas y reconciliarlas con las lineas de factura
+    #     res = super().post()
+    #     import pprint
+    #     for rec in self:
+    #         for retention in rec.l10n_ar_withholding_line_ids:
+    #             pprint.pprint(retention.read())
+    #     return res
+
+
+
+    def post(self):
+        # dont know yet why, but if we came from an invoice context values
+        # break behaviour, for eg. with demo user error writing account.account
+        # and with other users, error with block date of accounting
+        # TODO we should look for a better way to solve this
+
+        create_from_website = self._context.get(
+            'create_from_website', False)
+        create_from_statement = self._context.get(
+            'create_from_statement', False)
+        create_from_expense = self._context.get('create_from_expense', False)
+        self = self.with_context({})
+        for rec in self:
+            if not rec.document_number:
+                if rec.receiptbook_id.sequence_id:
+                    rec.document_number = rec.receiptbook_id.sequence_id.next_by_id()
+
+            if not rec.payment_ids:
+                raise ValidationError(_(
+                    'You can not confirm a payment group without payment '
+                    'lines!'))
+
+            if (rec.payment_subtype == 'double_validation' and
+                    rec.payment_difference and (not create_from_statement and
+                                                not create_from_expense)):
+                raise ValidationError(_(
+                    'To Pay Amount and Payment Amount must be equal!'))
+
+            writeoff_acc_id = False
+            writeoff_journal_id = False
+
+            if not create_from_website and not create_from_expense:
+                rec.payment_ids.filtered(lambda x: x.state == 'draft').action_post()
+
+            #counterpart_aml = rec.payment_ids.mapped('move_line_ids').filtered(
+            counterpart_aml = rec.payment_ids.mapped('invoice_line_ids').filtered(
+                lambda r: not r.reconciled and r.account_id.account_type in (
+                    'liability_payable', 'asset_receivable'))
+
+            # porque la cuenta podria ser no recivible y ni conciliable
+            # (por ejemplo en sipreco)
+            if counterpart_aml and rec.to_pay_move_line_ids:
+                #(counterpart_aml + (rec.to_pay_move_line_ids)).reconcile(
+                #    writeoff_acc_id, writeoff_journal_id)
+                # (counterpart_aml + (rec.to_pay_move_line_ids)).reconcile()
+                # rec.compute_withholdings()
+
+                rec.retention_move_line_ids.mapped('move_id').action_post()
+                lineas_retenciones = rec.retention_move_line_ids
+                # filtramos y nos quedamos solo con las retenciones
+                lineas_retenciones = lineas_retenciones.filtered(
+                    lambda r: not r.reconciled and r.account_id.account_type in (
+                        'liability_payable', 'asset_receivable'))
+                (counterpart_aml + (rec.to_pay_move_line_ids) + (lineas_retenciones)).reconcile()
+
+            # account.move.line(55261,)   +  account.move.line(55259,)
+
+            rec.state = 'posted'
+            if rec.receiptbook_id.mail_template_id:
+                rec.message_post_with_template(
+                    rec.receiptbook_id.mail_template_id.id,
+                )
