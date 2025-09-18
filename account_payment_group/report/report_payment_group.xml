@@ -188,6 +188,28 @@
                                 </td>
                             </tr>
                         </tbody>
+
+                        <tbody class="invoice_tbody">
+                            <!--   y aca recorremos y agregamos las retenciones, una por linea, y mostramos solo el nombre del impuesto y el amount -->
+                            <tr t-foreach="o.l10n_ar_withholding_line_ids" t-as="w" >
+                                <td >
+                                    <span t-if="w.tax_id" t-field="w.tax_id"/>
+                                </td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td >
+                                    <span t-if="w.amount" t-field="w.amount" t-options="{&quot;widget&quot;: &quot;monetary&quot;, &quot;display_currency&quot;: o.currency_id}"/>
+                                </td>
+                            </tr>
+                        </tbody>
+
+
+
+
+
+                        <t t-set="total_withholdings" t-value="sum(o.l10n_ar_withholding_line_ids.mapped('amount'))"/>
+                        <t t-set="total_without_withholdings" t-value="o.payments_amount - total_withholdings"/>
                         <tfoot>
                             <tr class="border-black">
                                 <td colspan="4">
@@ -195,10 +217,65 @@
                                 </td>
                                 <td class="text-right">
                                     <span t-field="o.payments_amount"/>
+<!--                                    <span t-esc="total_without_withholdings" t-options="{&quot;widget&quot;: &quot;monetary&quot;, &quot;display_currency&quot;: o.currency_id}"/>-->
                                 </td>
                             </tr>
                         </tfoot>
                     </table>
+
+
+                    <!--  Retenciones -->
+                    <!--  NO va mas, tiene que ir en la tabla de arriba -->
+                    <!--
+                    <table class="table" t-if="o.l10n_ar_withholding_line_ids">
+                        <thead>
+                            <div style="text-align: center; vertical-align: middle;">
+                                <h5 style="display: inline-block;">
+                                    <strong>Retenciones</strong>
+                                </h5>
+                            </div>
+                            <tr>
+                                <th style="width:25%;padding:5px">Impuesto</th>
+                                <th style="width:25%;padding:5px">Cuenta</th>
+                                <th style="width:25%;padding:5px">Número</th>
+                                <th style="width:25%;padding:5px">Base Imponible</th>
+                                <th style="width:25%;padding:5px">Importe</th>
+                            </tr>
+                        </thead>
+                        <tbody class="invoice_tbody">
+                            <tr t-foreach="o.l10n_ar_withholding_line_ids" t-as="w" style="font-size:12px">
+                                <td style="padding:0.50rem">
+                                    <span t-if="w.tax_id" t-field="w.tax_id"/>
+                                </td>
+                                <td style="padding:0.50rem">
+                                    <span t-if="w.account_id" t-field="w.account_id"/>
+                                </td>
+                                <td style="padding:0.50rem">
+                                    <span t-if="w.name" t-field="w.name"/>
+                                </td>
+                                <td style="padding:0.50rem">
+                                    <span t-if="w.base_amount" t-field="w.base_amount" t-options="{&quot;widget&quot;: &quot;monetary&quot;, &quot;display_currency&quot;: o.currency_id}"/>
+                                </td>
+                                <td style="padding:0.50rem">
+                                    <span t-if="w.amount" t-field="w.amount" t-options="{&quot;widget&quot;: &quot;monetary&quot;, &quot;display_currency&quot;: o.currency_id}"/>
+                                </td>
+                            </tr>
+                        </tbody>
+
+                        <tfoot>
+                            <tr class="border-black">
+                                <td colspan="4">
+                                    <strong>Total Retenciones</strong>
+                                </td>
+                                <td class="text-right">
+                                    <span t-esc="sum(o.l10n_ar_withholding_line_ids.mapped('amount'))" t-options="{&quot;widget&quot;: &quot;monetary&quot;, &quot;display_currency&quot;: o.currency_id}"/>
+                                </td>
+                            </tr>
+                        </tfoot>
+
+                    </table>
+                    -->
+
 
                     <!-- Aca arranca lo nuevo -->
                     <table class="table">
@@ -254,6 +331,8 @@
                                         <t t-set="debit" t-value="request.env['account.partial.reconcile'].sudo().search([('credit_move_id', '=', f.id)], limit=1)"/>
                                         <span t-esc="credit.amount - debit.amount" t-options="{&quot;widget&quot;: &quot;monetary&quot;, &quot;display_currency&quot;: o.currency_id}"/>
                                     </t>
+
+
                                 </td>
                             </tr>
                             <t t-if="o.partner_type == 'supplier' ">
@@ -291,53 +370,6 @@
                         </tfoot>
                     </table>
 
-                    <table class="table" t-if="o.l10n_ar_withholding_line_ids">
-                        <thead>
-                            <div style="text-align: center; vertical-align: middle;">
-                                <h5 style="display: inline-block;">
-                                    <strong>Retenciones</strong>
-                                </h5>
-                            </div>
-                            <tr>
-                                <th style="width:25%;padding:5px">Impuesto</th>
-                                <th style="width:25%;padding:5px">Cuenta</th>
-                                <th style="width:25%;padding:5px">Número</th>
-                                <th style="width:25%;padding:5px">Base Imponible</th>
-                                <th style="width:25%;padding:5px">Importe</th>
-                            </tr>
-                        </thead>
-                        <tbody class="invoice_tbody">
-                            <tr t-foreach="o.l10n_ar_withholding_line_ids" t-as="w" style="font-size:12px">
-                                <td style="padding:0.50rem">
-                                    <span t-if="w.tax_id" t-field="w.tax_id"/>
-                                </td>
-                                <td style="padding:0.50rem">
-                                    <span t-if="w.account_id" t-field="w.account_id"/>
-                                </td>
-                                <td style="padding:0.50rem">
-                                    <span t-if="w.name" t-field="w.name"/>
-                                </td>
-                                <td style="padding:0.50rem">
-                                    <span t-if="w.base_amount" t-field="w.base_amount" t-options="{&quot;widget&quot;: &quot;monetary&quot;, &quot;display_currency&quot;: o.currency_id}"/>
-                                </td>
-                                <td style="padding:0.50rem">
-                                    <span t-if="w.amount" t-field="w.amount" t-options="{&quot;widget&quot;: &quot;monetary&quot;, &quot;display_currency&quot;: o.currency_id}"/>
-                                </td>
-                            </tr>
-                        </tbody>
-
-                        <tfoot>
-                            <tr class="border-black">
-                                <td colspan="4">
-                                    <strong>Total Retenciones</strong>
-                                </td>
-                                <td class="text-right">
-                                    <span t-esc="sum(o.l10n_ar_withholding_line_ids.mapped('amount'))" t-options="{&quot;widget&quot;: &quot;monetary&quot;, &quot;display_currency&quot;: o.currency_id}"/>
-                                </td>
-                            </tr>
-                        </tfoot>
-
-                    </table>
 
                 </div>
                 <!--END PAGE-->
@@ -362,7 +394,6 @@
             <field name="model">account.payment.group</field>
             <field name="binding_model_id" ref="model_account_payment_group"/>
             <field name="report_type">qweb-pdf</field>
-<!--            <field name="report_type">qweb-html</field>-->
             <field name="report_name">account_payment_group.report_payment_group</field>
             <field name="report_file">account_payment_group.report_payment_group</field>
             <field name="attachment">(object.state in ('posted')) and ((object.name or '').replace('/','')+'.pdf')</field>
