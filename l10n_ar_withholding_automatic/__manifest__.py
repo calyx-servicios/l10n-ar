@@ -2,7 +2,7 @@
     'name': 'Ret/Per Automáticas de Argentina',
     'icon': '/account/static/description/l10n.png',
     'countries': ['ar'],
-    'version': '17.0.1.0.4',
+    'version': '17.0.1.0.5',
     'license': 'AGPL-3',
     'author': 'ADHOC SA, Moldeo Interactive, Exemax, Codize, Birtum',
     'category': 'Accounting & Finance',
