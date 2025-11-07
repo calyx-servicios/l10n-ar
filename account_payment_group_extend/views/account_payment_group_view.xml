@@ -11,7 +11,14 @@
             </xpath>
             <field name="payment_difference" position="after">
                 <field name="move_id"/>
+            </field>
+            <field name="receiptbook_id" position="after">
+                <label for="retencion_ganancias" string="Ret G." invisible="not company_regimenes_ganancias_ids"/>
                 <field name="company_regimenes_ganancias_ids" invisible="True"/>
+                <div invisible="not company_regimenes_ganancias_ids" class="o_row">
+                    <field name="retencion_ganancias" readonly="state not in ['draft']" required="company_regimenes_ganancias_ids and state == 'draft'"/>
+                    <field name="regimen_ganancias_id" readonly="state not in ['draft']" invisible="retencion_ganancias != 'nro_regimen'" required="retencion_ganancias == 'nro_regimen' and company_regimenes_ganancias_ids and state == 'draft'" domain="[('id', 'in', company_regimenes_ganancias_ids)]" options="{'no_open': True, 'no_create': True}"/>
+                </div>
             </field>
             <xpath expr="//field[@name='debt_move_line_ids']/.." position="replace"/>
             <xpath expr="//field[@name='payment_ids']/.." position="after">
@@ -82,12 +89,12 @@
                             <field name="l10n_ar_partner_vat" invisible="state != 'draft' or not l10n_ar_partner_vat or is_internal_transfer or (not show_partner_bank_account and payment_method_code not in ['out_third_party_checks', 'check_printing'])"/>
                             <field name="date" readonly="state != 'draft'"/>
                             <field name="ref" string="Memo"/>
-                            <field name="receiptbook_id" invisible="is_internal_transfer or not use_payment_pro" readonly="state != 'draft'" required="state == 'draft'" options="{'no_create': True}"/>
+                            <field name="receiptbook_id" invisible="is_internal_transfer or not use_payment_pro" readonly="True" required="state == 'draft'" options="{'no_create': True}" force_save="1"/>
                             <label for="retencion_ganancias" string="Ret G." invisible="not company_regimenes_ganancias_ids"/>
                             <field name="company_regimenes_ganancias_ids" invisible="True"/>
                             <div invisible="not company_regimenes_ganancias_ids" class="o_row">
-                                <field name="retencion_ganancias" readonly="state not in ['draft']" required="company_regimenes_ganancias_ids and state == 'draft'"/>
-                                <field name="regimen_ganancias_id" readonly="state not in ['draft']" invisible="retencion_ganancias != 'nro_regimen'" required="retencion_ganancias == 'nro_regimen' and company_regimenes_ganancias_ids and state == 'draft'" domain="[('id', 'in', company_regimenes_ganancias_ids)]" options="{'no_open': True, 'no_create': True}"/>
+                                <field name="retencion_ganancias" readonly="True" required="company_regimenes_ganancias_ids and state == 'draft'" force_save="1"/>
+                                <field name="regimen_ganancias_id" force_save="1" readonly="True" invisible="retencion_ganancias != 'nro_regimen'" required="retencion_ganancias == 'nro_regimen' and company_regimenes_ganancias_ids and state == 'draft'" domain="[('id', 'in', company_regimenes_ganancias_ids)]" options="{'no_open': True, 'no_create': True}"/>
                             </div>
                         </group>
                         <group>
@@ -128,6 +135,9 @@
                         </group>
                     </group>
                 </form>
+            </xpath>
+            <xpath expr="//field[@name='payment_ids']" position="attributes">
+                <attribute name="context">{'receiptbook_id':receiptbook_id , 'retencion_ganancias': retencion_ganancias , 'regimen_ganancias_id': regimen_ganancias_id}</attribute>
             </xpath>
         </field>
     </record>

@@ -30,11 +30,17 @@ class AccountPaymentGroup(models.Model):
         compute="_compute_wiholding_fields"
     )
     retencion_ganancias = fields.Selection(
-        compute="_compute_wiholding_fields"
+        string='Retención Ganancias',
+        selection=[
+            ('imposibilidad_retencion', 'Imposibilidad de Retención'),
+            ('no_aplica', 'No Aplica'),
+            ('nro_regimen', 'Nro Regimen'),
+        ]
     )
     regimen_ganancias_id = fields.Many2one(
+        string='Regimen Ganancias',
         comodel_name="afip.tabla_ganancias.alicuotasymontos",
-        compute="_compute_wiholding_fields"
+        ondelete='restrict',
     )
 
     def _compute_wiholding_fields(self):
@@ -42,12 +48,19 @@ class AccountPaymentGroup(models.Model):
             rec.withholdable_advanced_amount = sum(rec.payment_ids.mapped(
                 "withholdable_advanced_amount"
             ))
-            rec.retencion_ganancias = False
-            rec.regimen_ganancias_id = False
-            if rec.payment_ids:
-                rec.retencion_ganancias = rec.payment_ids[0].retencion_ganancias
-                if rec.payment_ids[0].regimen_ganancias_id:
-                    rec.regimen_ganancias_id = rec.payment_ids[0].regimen_ganancias_id.id
+
+    @api.onchange("receiptbook_id", "retencion_ganancias", "regimen_ganancias_id")
+    @api.constrains("receiptbook_id", "retencion_ganancias", "regimen_ganancias_id")
+    def _set_payment_withholding_fields(self):
+        for rec in self:
+            for payment in rec.payment_ids:
+                payment.receiptbook_id = False
+                payment.regimen_ganancias_id = False
+                if rec.receiptbook_id:
+                    payment.receiptbook_id = rec.receiptbook_id.id
+                if rec.regimen_ganancias_id:
+                    payment.regimen_ganancias_id = rec.regimen_ganancias_id.id
+                payment.retencion_ganancias = rec.retencion_ganancias
 
     def _compute_dates(self):
         for rec in self:

@@ -203,6 +203,7 @@ class AccountPaymentGroup(models.Model):
                     self.withholdable_advanced_amount
         return (withholdable_advanced_amount, withholdable_invoiced_amount)
 
+    @api.depends('company_id.regimenes_ganancias_ids')
     def _company_regimenes_ganancias(self):
         """
         Lo hacemos con campo computado y no related para que solo se setee
