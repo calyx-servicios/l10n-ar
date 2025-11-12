@@ -73,50 +73,98 @@
                             </tr>
                         </thead>
                         <tbody>
-                            <tr>
-                                <td style="width: 50%;" class="text-right">
-                                    Impuesto:
-                                </td>
-                                <td class="text-left">
-                                    <span t-field="o.tax_id.description"/>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td class="text-right">
-                                    Régimen / Descripción:
-                                </td>
-                                <td class="text-left">
-                                    <span t-field="o.ref"/>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td class="text-right">
-                                    Comprobante que origina la retención:
-                                </td>
-                                <td class="text-left">
-                                    <span t-esc="report_number"/>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td class="text-right">
-                                    Importe del comprobante que origina la retención:
-                                </td>
-                                <td class="text-left">
-                                    <t t-if="o.currency_id">
-                                        <span t-field="o.base_amount"/>
-                                    </t>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td class="text-right">
-                                    Importe de la retención:
-                                </td>
-                                <td class="text-left">
-                                    <t t-if="o.currency_id">
-                                        <span t-field="o.amount"/>
-                                    </t>
-                                </td>
-                            </tr>
+                            <t t-if="not o.payment_group_id">
+                                <tr>
+                                    <td style="width: 50%;" class="text-right">
+                                        Impuesto:
+                                    </td>
+                                    <td class="text-left">
+                                        <span t-field="o.tax_id.description"/>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class="text-right">
+                                        Régimen / Descripción:
+                                    </td>
+                                    <td class="text-left">
+                                        <span t-field="o.ref"/>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class="text-right">
+                                        Comprobante que origina la retención:
+                                    </td>
+                                    <td class="text-left">
+                                        <span t-esc="report_number"/>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class="text-right">
+                                        Importe del comprobante que origina la retención:
+                                    </td>
+                                    <td class="text-left">
+                                        <t t-if="o.currency_id">
+                                            <span t-field="o.base_amount"/>
+                                        </t>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class="text-right">
+                                        Importe de la retención:
+                                    </td>
+                                    <td class="text-left">
+                                        <t t-if="o.currency_id">
+                                            <span t-field="o.amount"/>
+                                        </t>
+                                    </td>
+                                </tr>
+                            </t>
+                            <t t-else="">
+                                <tr>
+                                    <td style="width: 50%;" class="text-right">
+                                        Impuesto:
+                                    </td>
+                                    <td class="text-left">
+                                        <span t-field="o.tax_id.description"/>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class="text-right">
+                                        Régimen / Descripción:
+                                    </td>
+                                    <td class="text-left">
+                                        <span t-esc="o.payment_group_id._get_regimen_ganancias_desc()"/>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class="text-right">
+                                        Comprobante que origina la retención:
+                                    </td>
+                                    <td class="text-left">
+                                        <span t-esc="o.payment_group_id.name"/>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class="text-right">
+                                        Importe del comprobante que origina la retención:
+                                    </td>
+                                    <td class="text-left">
+                                        <t t-if="o.currency_id">
+                                            <span t-field="o.base_amount"/>
+                                        </t>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class="text-right">
+                                        Importe de la retención:
+                                    </td>
+                                    <td class="text-left">
+                                        <t t-if="o.currency_id">
+                                            <span t-field="o.amount"/>
+                                        </t>
+                                    </td>
+                                </tr>
+                            </t>
                         </tbody>
                     </table>
                     <table>

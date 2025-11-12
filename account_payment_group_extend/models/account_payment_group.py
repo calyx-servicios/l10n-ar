@@ -1,6 +1,6 @@
-from odoo import models, fields, api
+from odoo import models, fields, api, Command
 from odoo.osv import expression
-from odoo.exceptions import ValidationError
+from odoo.exceptions import UserError, ValidationError
 from ast import literal_eval
 import datetime
 
@@ -336,6 +336,7 @@ class AccountPaymentGroup(models.Model):
         create_from_expense = self._context.get('create_from_expense', False)
         self = self.with_context({})
         for rec in self:
+            rec._set_withholding_names()
             if not rec.document_number:
                 if rec.receiptbook_id.sequence_id:
                     rec.document_number = rec.receiptbook_id.sequence_id.next_by_id()
@@ -385,3 +386,22 @@ class AccountPaymentGroup(models.Model):
                 rec.message_post_with_template(
                     rec.receiptbook_id.mail_template_id.id,
                 )
+
+    def _set_withholding_names(self):
+        for rec in self:
+            commands = []
+            for line in rec.l10n_ar_withholding_line_ids:
+                if (not line.name or line.name == '/'):
+                    if line.tax_id.l10n_ar_withholding_sequence_id:
+                        commands.append(Command.update(line.id, {'name': line.tax_id.l10n_ar_withholding_sequence_id.next_by_id()}))
+                    else:
+                        raise UserError("Por favor configure una secuencia para el impuesto %s" % line.tax_id.name)
+                if commands:
+                    rec.l10n_ar_withholding_line_ids = commands
+
+    def _get_regimen_ganancias_desc(self):
+        self.ensure_one()
+        if self.retencion_ganancias == "nro_regimen" and self.regimen_ganancias_id:
+            reg = self.regimen_ganancias_id
+            return f"{reg.codigo_de_regimen} - {reg.concepto_referencia}"
+        return False
