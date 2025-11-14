@@ -1,4 +1,4 @@
-from odoo import models, fields, api, Command
+from odoo import models, fields, api, _, Command
 from odoo.osv import expression
 from odoo.exceptions import UserError, ValidationError
 from ast import literal_eval
@@ -205,20 +205,22 @@ class AccountPaymentGroup(models.Model):
 
     def compute_withholdings(self):
         for rec in self:
-            if rec.payment_ids:
-                rec._compute_withholdings()
-                rec._set_retention_move_line_ids()
-                rec._set_witholding_lines_asset_state()
+            rec._compute_withholdings()
+            rec._set_retention_move_line_ids()
+            rec._set_witholding_lines_asset_state()
+
 
     def _compute_withholdings(self):
         if self.partner_type != 'supplier':
             return
+        commands = []
         taxes = self.env['account.tax'].with_context(type=None).search([
             ('type_tax_use', '=', 'none'),
             ('withholding_type', '!=', 'none'),
             ('l10n_ar_withholding_payment_type', '=', self.partner_type),
             ('company_id', '=', self.company_id.id),
         ])
+
         for tax in taxes:
             if (
                     tax.withholding_user_error_message and
@@ -233,20 +235,42 @@ class AccountPaymentGroup(models.Model):
                 if self.search(domain):
                     raise ValidationError(tax.withholding_user_error_message)
             vals = tax.get_withholding_vals(self)
+
+            # we set computed_withholding_amount, hacemos round porque
+            # si no puede pasarse un valor con mas decimales del que se ve
+            # y terminar dando error en el asiento por debitos y creditos no
+            # son iguales, algo parecido hace odoo en el compute_all de taxes
             currency = self.currency_id
             period_withholding_amount = currency.round(vals.get('period_withholding_amount', 0.0))
             previous_withholding_amount = currency.round(vals.get('previous_withholding_amount'))
+            # withholding can not be negative
             computed_withholding_amount = max(0, (period_withholding_amount - previous_withholding_amount))
+
+            payment_withholding = self.l10n_ar_withholding_line_ids.filtered(lambda x: x.tax_id == tax)
+            if not computed_withholding_amount:
+                # if on refresh no more withholding, we delete if it exists
+                if payment_withholding:
+                    commands.append(Command.delete(payment_withholding.id))
+                continue
+
+            # we copy withholdable_base_amount on base_amount
+            # al final vimos con varios clientes que este monto base
+            # debe ser la base imponible de lo que se está pagando en este
+            # voucher
             vals['base_amount'] = vals.get('withholdable_advanced_amount') + vals.get('withholdable_invoiced_amount')
             vals['amount'] = computed_withholding_amount
             vals['computed_withholding_amount'] = computed_withholding_amount
-            if vals["amount"] > 0 and vals["base_amount"] > 0:
-                self.env["l10n_ar.payment.withholding"].create({
-                    "tax_id": tax.id,
-                    "amount": abs(vals["amount"]),
-                    "base_amount": abs(vals["base_amount"]),
-                    "payment_group_id": self.id
-                })
+            vals.pop("tax_withholding_id")
+            vals.pop("date")
+            vals.pop("communication")
+
+            # por ahora no imprimimos el comment, podemos ver de llevarlo a
+            # otro campo si es de utilidad
+            vals.pop('comment')
+            vals['payment_id'] = False
+            vals["payment_group_id"] = self.id
+            vals["tax_id"] = tax.id
+            self.env["l10n_ar.payment.withholding"].create(vals)
 
     def _get_withholdable_amounts(
             self, withholding_amount_type, withholding_advances):
@@ -342,15 +366,16 @@ class AccountPaymentGroup(models.Model):
                     rec.document_number = rec.receiptbook_id.sequence_id.next_by_id()
 
             if not rec.payment_ids:
-                raise ValidationError(_(
-                    'You can not confirm a payment group without payment '
-                    'lines!'))
+                raise ValidationError(
+                    'No puede confirmar un grupo de pagos sin un pago asociado'
+                )
 
             if (rec.payment_subtype == 'double_validation' and
                     rec.payment_difference and (not create_from_statement and
                                                 not create_from_expense)):
-                raise ValidationError(_(
-                    'To Pay Amount and Payment Amount must be equal!'))
+                raise ValidationError(
+                    'Para poder pagar el monto a pagar y monto de pago debe ser igual'
+                )
 
             writeoff_acc_id = False
             writeoff_journal_id = False
