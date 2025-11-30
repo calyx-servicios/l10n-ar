@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+	<record id="view_account_import_padron_ret_perc_list" model="ir.ui.view">
+        <field name="name">account.import.padron.ret.perc.list</field>
+        <field name="model">account.import.padron.ret.perc</field>
+        <field name="arch" type="xml">
+            <list>
+                <field name="name"/>
+                <field name="padron_type_id"/>
+                <field name="ubication_file_import" optional="hide"/>
+                <field name="import_line_ids"/>
+                <field name="state"/>
+                <field name="write_uid" optional="hide"/>
+                <field name="write_date" optional="hide"/>
+                <field name="create_uid" optional="hide"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_account_import_padron_ret_perc_form" model="ir.ui.view">
+        <field name="name">account.import.padron.ret.perc.form</field>
+        <field name="model">account.import.padron.ret.perc</field>
+        <field name="arch" type="xml">
+            <form>
+                <header>
+                    <button name="import_padron_server" string="Import Padron Server" type="object" class="oe_highlight"/>
+                    <button name="open2close" string="Close" type="object" class="oe_highlight" invisible="state != 'open'"/>
+                    <field name="state" widget="statusbar" statusbar_visible="open,close" readonly="1"/>
+                </header>
+                <group>
+                    <group>
+                        <field name="name"/>
+                        <field name="padron_type_id"/>
+                    </group>
+                    <group>
+                        <field name="default_date_from"/>
+                        <field name="default_date_to"/>
+                        <field name="default_percentage_perception"/>
+                        <field name="default_percentage_retention"/>
+                    </group>
+                </group>
+                <notebook>
+                    <page name="import_line_ids_page" string="Import Lines">
+                        <field name="import_line_ids">
+                            <list editable="bottom">
+                                <field name="cuit"/>
+                                <field name="partner_id"/>
+                                <field name="date_from"/>
+                                <field name="date_to"/>
+                                <field name="percentage_retention"/>
+                                <field name="percentage_perception"/>
+                                <field name="in_padron"/>
+                            </list>
+                        </field>
+                    </page>
+                    <page name="server_page" string="Server Import">
+                       <group>
+                            <field name="type"/>
+                            <field name="server_host"/>
+                            <field name="server_database"/>
+                            <field name="server_user"/>
+                            <field name="server_password"/>
+                            <field name="server_port"/>
+                        </group>
+                    </page>
+                    <page name="file_page" string="File Import">
+                       <group>
+                            <field name="ubication_file_import"/>
+                            <field name="ubication_file_ret_import"/>
+                            <field name="ubication_file_perc_import"/>
+                            <button name="import_padron_file" string="Old Import Padron File" type="object" class="oe_highlight"/>
+                        </group>
+                    </page>
+                </notebook>
+            </form>
+        </field>
+    </record>
+
+    <record id="import_padron_retention_perception_action" model="ir.actions.act_window">
+        <field name="name">Import Padron Retention and Perception</field>
+        <field name="res_model">account.import.padron.ret.perc</field>
+        <field name="view_mode">list,form</field>
+        <field name="domain" eval="False"/> <!-- Force empty -->
+        <field name="context">{}</field>
+        <field name="view_id" ref="view_account_import_padron_ret_perc_list"/>
+    </record>
+
+    <menuitem action="import_padron_retention_perception_action" id="menu_import_padron_retention_perception"  sequence="9" parent="account.account_account_menu" groups="account_padron_withholding_perception.padron_retention_perception_responsible_group"/>
+</odoo>

@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+	<record id="view_account_padron_retention_perception_type_list" model="ir.ui.view">
+        <field name="name">account.padron.retention.perception.type.list</field>
+        <field name="model">account.padron.retention.perception.type</field>
+        <field name="arch" type="xml">
+            <list>
+                <field name="name"/>
+                <field name="account_tag_perception_id"/>
+                <field name="payment_journal_retention_id"/>
+                <field name="account_tax_retention_id"/>
+                <field name="description"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_account_padron_retention_perception_type_form" model="ir.ui.view">
+        <field name="name">account.padron.retention.perception.type.form</field>
+        <field name="model">account.padron.retention.perception.type</field>
+        <field name="arch" type="xml">
+            <form>
+                <group>
+                    <group name="group_1">
+                        <field name="name"/>
+                    </group>
+                    <group name="group_2">
+                        <field name="description"/>
+                        <field name="company_id"/>
+                    </group>
+                    <group name="group_3" string="Perceptions">
+                        <field name="account_tax_perception_id" domain="[('company_id', '=', company_id)]"/>
+                        <field name="account_tag_perception_id"/>
+                        <field name="minimum_calcule_perception" />
+                        <field name="minimum_base_perception"/>
+                    </group>
+                    <group name="group_4" string="Withholding">
+                        <field name="account_tax_retention_id" domain="[('company_id', '=', company_id)]"/>
+                        <field name="payment_journal_retention_id" domain="[('company_id', '=', company_id)]"/>
+                        <field name="minimum_calcule_retention"/>
+                        <field name="minimum_base_retention"/>
+                    </group>
+                </group>
+                <notebook>
+                	<page name="line_partner_ids_page" string="Partners">
+                        <button name="partner_control" string="Control" type="object" class="oe_highlight"/>
+                        <field name="line_partner_ids" >
+                            <list editable="bottom" widget="many2many">
+                                <field name="name"/>
+                                <!-- <field name="main_id_number"/> -->
+                            </list>
+                        </field>
+                    </page>
+                    <page name="padron_line_ids_page" string="Lines Config Retention">
+                        <field name="padron_line_ids" >
+                            <list editable="bottom">
+                                <field name="cuit"/>
+                                <field name="partner_id"/>
+                                <field name="date_from"/>
+                                <field name="date_to"/>
+                                <field name="percentage_retention"/>
+                                <field name="percentage_perception"/>
+                                <field name="in_padron"/>
+                                <field name="arba_alicuot_id"/>
+                                <button name="create_arba_perception_line" string="Create Perception"
+                                	type="object" class="oe_highlight"/>
+                            </list>
+                        </field>
+                    </page>
+                    <page name="server_page" string="Server Import">
+                    	<group>
+                            <field name="type"/>
+                            <field name="server_host"/>
+                            <field name="server_database"/>
+                            <field name="server_user"/>
+                            <field name="server_password"/>
+                            <field name="server_port"/>
+                            <field name="default_percentage_perception"/>
+                            <field name="default_percentage_retention"/>
+                        </group>
+                    </page>
+                </notebook>
+            </form>
+        </field>
+    </record>
+
+    <record id="padron_retention_perception_type_action" model="ir.actions.act_window">
+        <field name="name">Padron Retention and Perception</field>
+        <field name="res_model">account.padron.retention.perception.type</field>
+        <field name="view_mode">list,form</field>
+        <field name="domain" eval="False"/> <!-- Force empty -->
+        <field name="context">{}</field>
+        <field name="view_id" ref="view_account_padron_retention_perception_type_list"/>
+    </record>
+
+    <menuitem action="padron_retention_perception_type_action" id="menu_padron_retention_perception_type"  sequence="8"
+    	parent="account.account_account_menu"  groups="account_padron_withholding_perception.padron_retention_perception_responsible_group"/>
+</odoo>

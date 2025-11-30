@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo noupdate="1">
+	<record id="update_padron" forcecreate="True" model="ir.cron">
+		<field name="name">Update Padron</field>
+		<field name="active">True</field>
+		<field name="interval_number">1</field>
+		<field name="interval_type">months</field>
+		<field name="model_id" ref="model_padron_update_cron"/>
+		<field name="state">code</field>
+		<field name="code">model.update_padron(next_month=True)</field>
+	</record>
+	<record id="close_padron" forcecreate="True" model="ir.cron">
+		<field name="name">Close Padron</field>
+		<field name="active">True</field>
+		<field name="interval_number">1</field>
+		<field name="interval_type">days</field>
+		<field name="model_id" ref="model_padron_update_cron"/>
+		<field name="state">code</field>
+		<field name="code">model.close_padron()</field>
+	</record>
+</odoo>

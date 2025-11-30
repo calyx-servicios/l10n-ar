@@ -1,0 +1,577 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# 	* account_padron_withholding_perception
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 13.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2022-07-06 20:46+0000\n"
+"PO-Revision-Date: 2022-07-06 20:46+0000\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Plural-Forms: \n"
+
+#. module: account_padron_withholding_perception
+#: model:ir.model.fields.selection,name:account_padron_withholding_perception.selection__account_import_padron_ret_perc__type__agip
+#: model:ir.model.fields.selection,name:account_padron_withholding_perception.selection__account_padron_retention_perception_type__type__agip
+msgid "AGIP"
+msgstr "AGIP"
+
+#. module: account_padron_withholding_perception
+#: model:ir.model.fields.selection,name:account_padron_withholding_perception.selection__account_import_padron_ret_perc__type__arba
+#: model:ir.model.fields.selection,name:account_padron_withholding_perception.selection__account_padron_retention_perception_type__type__arba
+msgid "ARBA"
+msgstr "ARBA"
+
+#. module: account_padron_withholding_perception
+#: code:addons/account_padron_withholding_perception/models/account_padron_retention_perception_type.py:0
+#: model:ir.model,name:account_padron_withholding_perception.model_account_padron_retention_perception_type
+#, python-format
+msgid "Account Patterns Withholding and Perception type"
+msgstr "Cuenta Patrones Tipo Retención y Percepción"
+
+#. module: account_padron_withholding_perception
+#: model:ir.model.fields,field_description:account_padron_withholding_perception.field_account_padron_retention_perception_type__account_tag_perception_id
+msgid "Account Tag Perception"
+msgstr "Etiqueta Percepción"
+
+#. module: account_padron_withholding_perception
+#: model:ir.model.fields,field_description:account_padron_withholding_perception.field_account_padron_retention_perception_type__account_tax_perception_id
+msgid "Account Tax Perception"
+msgstr "Cuenta Percepción"
+
+#. module: account_padron_withholding_perception
+#: model:ir.model.fields,field_description:account_padron_withholding_perception.field_account_padron_retention_perception_type__account_tax_retention_id
+msgid "Account Tax Retention"
+msgstr "Cuenta Retención"
+
+#. module: account_padron_withholding_perception
+#: code:addons/account_padron_withholding_perception/models/account_import_padron_ret_perc.py:0
+#: model:ir.model,name:account_padron_withholding_perception.model_account_import_padron_ret_perc
+#, python-format
+msgid "Account import patterns withholding and perception"
+msgstr "Patrones de importación de cuentas con tenencia y percepción"
+
+#. module: account_padron_withholding_perception
+#: code:addons/account_padron_withholding_perception/models/account_padron_retention_perception_line.py:0
+#: model:ir.model,name:account_padron_withholding_perception.model_account_padron_retention_perception_line
+#, python-format
+msgid "Account patterns withholding and perception line"
+msgstr "Línea de retención y percepción de patrones de cuenta"
+
+#. module: account_padron_withholding_perception
+#: model:ir.module.category,description:account_padron_withholding_perception.padron_retention_perception
+msgid "Base category for the Retention and Perception Patterns"
+msgstr "Categoría base para los Padrones de Retención y Percepción"
+
+#. module: account_padron_withholding_perception
+#: model:ir.model.fields,field_description:account_padron_withholding_perception.field_account_padron_retention_perception_line__cuit
+msgid "CUIT"
+msgstr "CUIT"
+
+#. module: account_padron_withholding_perception
+#: model:ir.model.fields.selection,name:account_padron_withholding_perception.selection__account_import_padron_ret_perc__state__close
+#: model_terms:ir.ui.view,arch_db:account_padron_withholding_perception.view_account_import_padron_ret_perc_form
+msgid "Close"
+msgstr "Cerrado"
+
+#. module: account_padron_withholding_perception
+#: model:ir.actions.server,name:account_padron_withholding_perception.close_padron_ir_actions_server
+#: model:ir.cron,cron_name:account_padron_withholding_perception.close_padron
+#: model:ir.cron,name:account_padron_withholding_perception.close_padron
+msgid "Close Padron"
+msgstr "Cerrar Padrón"
+
+#. module: account_padron_withholding_perception
+#: model:ir.model,name:account_padron_withholding_perception.model_res_config_settings
+msgid "Config Settings"
+msgstr "Opciones de Configuración"
+
+#. module: account_padron_withholding_perception
+#: model:ir.model,name:account_padron_withholding_perception.model_res_partner
+msgid "Contact"
+msgstr "Contacto"
+
+#. module: account_padron_withholding_perception
+#: model_terms:ir.ui.view,arch_db:account_padron_withholding_perception.view_account_padron_retention_perception_type_form
+msgid "Control"
+msgstr "Control"
+
+#. module: account_padron_withholding_perception
+#: model_terms:ir.ui.view,arch_db:account_padron_withholding_perception.view_move_form_inherit
+msgid "Control Perception"
+msgstr "Control Percepción"
+
+#. module: account_padron_withholding_perception
+#: model_terms:ir.ui.view,arch_db:account_padron_withholding_perception.view_account_padron_retention_perception_type_form
+msgid "Create Perception"
+msgstr "Crear Percepción"
+
+#. module: account_padron_withholding_perception
+#: model:ir.model.fields,field_description:account_padron_withholding_perception.field_account_import_padron_ret_perc__create_uid
+#: model:ir.model.fields,field_description:account_padron_withholding_perception.field_account_padron_retention_perception_line__create_uid
+#: model:ir.model.fields,field_description:account_padron_withholding_perception.field_account_padron_retention_perception_type__create_uid
+#: model:ir.model.fields,field_description:account_padron_withholding_perception.field_padron_update_cron__create_uid
+msgid "Created by"
+msgstr "Creado por"
+
+#. module: account_padron_withholding_perception
+#: model:ir.model.fields,field_description:account_padron_withholding_perception.field_account_import_padron_ret_perc__create_date
+#: model:ir.model.fields,field_description:account_padron_withholding_perception.field_account_padron_retention_perception_line__create_date
+#: model:ir.model.fields,field_description:account_padron_withholding_perception.field_account_padron_retention_perception_type__create_date
+#: model:ir.model.fields,field_description:account_padron_withholding_perception.field_padron_update_cron__create_date
+msgid "Created on"
+msgstr "Creado en"
+
+#. module: account_padron_withholding_perception
+#: model:ir.model.fields,field_description:account_padron_withholding_perception.field_account_import_padron_ret_perc__name
+msgid "Date"
+msgstr "Fecha"
+
+#. module: account_padron_withholding_perception
+#: model:ir.model.fields,field_description:account_padron_withholding_perception.field_account_padron_retention_perception_line__date_from
+msgid "Date From"
+msgstr "Fecha de inicio"
+
+#. module: account_padron_withholding_perception
+#: model:ir.model.fields,field_description:account_padron_withholding_perception.field_account_padron_retention_perception_line__date_to
+msgid "Date To"
+msgstr "Fecha final"
+
+#. module: account_padron_withholding_perception
+#: model:ir.model.fields,field_description:account_padron_withholding_perception.field_account_import_padron_ret_perc__default_date_from
+msgid "Default Date From"
+msgstr "Fecha de inicio Default"
+
+#. module: account_padron_withholding_perception
+#: model:ir.model.fields,field_description:account_padron_withholding_perception.field_account_import_padron_ret_perc__default_date_to
+msgid "Default Date To"
+msgstr "Fecha final Default"
+
+#. module: account_padron_withholding_perception
+#: model:ir.model.fields,field_description:account_padron_withholding_perception.field_account_import_padron_ret_perc__default_percentage_perception
+#: model:ir.model.fields,field_description:account_padron_withholding_perception.field_account_padron_retention_perception_type__default_percentage_perception
+msgid "Default Percentage Perception"
+msgstr "Default Porcentaje de Percepción"
+
+#. module: account_padron_withholding_perception
+#: model:ir.model.fields,field_description:account_padron_withholding_perception.field_account_import_padron_ret_perc__default_percentage_retention
+#: model:ir.model.fields,field_description:account_padron_withholding_perception.field_account_padron_retention_perception_type__default_percentage_retention
+msgid "Default Percentage Retention"
+msgstr "Default Porcentaje Retención"
+
+#. module: account_padron_withholding_perception
+#: model:ir.model.fields,field_description:account_padron_withholding_perception.field_account_padron_retention_perception_type__description
+msgid "Description"
+msgstr "Descripción"
+
+#. module: account_padron_withholding_perception
+#: model:ir.model.fields,field_description:account_padron_withholding_perception.field_account_import_padron_ret_perc__display_name
+#: model:ir.model.fields,field_description:account_padron_withholding_perception.field_account_padron_retention_perception_line__display_name
+#: model:ir.model.fields,field_description:account_padron_withholding_perception.field_account_padron_retention_perception_type__display_name
+#: model:ir.model.fields,field_description:account_padron_withholding_perception.field_padron_update_cron__display_name
+msgid "Display Name"
+msgstr "Mostrar Nombre"
+
+#. module: account_padron_withholding_perception
+#: model_terms:ir.ui.view,arch_db:account_padron_withholding_perception.view_account_import_padron_ret_perc_form
+msgid "File Import"
+msgstr "Importar desde Archivo"
+
+#. module: account_padron_withholding_perception
+#: model:ir.model.fields,field_description:account_padron_withholding_perception.field_account_import_padron_ret_perc__id
+#: model:ir.model.fields,field_description:account_padron_withholding_perception.field_account_padron_retention_perception_line__id
+#: model:ir.model.fields,field_description:account_padron_withholding_perception.field_account_padron_retention_perception_type__id
+#: model:ir.model.fields,field_description:account_padron_withholding_perception.field_padron_update_cron__id
+msgid "ID"
+msgstr "ID"
+
+#. module: account_padron_withholding_perception
+#: model:ir.model.fields,field_description:account_padron_withholding_perception.field_account_padron_retention_perception_line__import_padron_id
+msgid "Import Header"
+msgstr "Cabecera"
+
+#. module: account_padron_withholding_perception
+#: model:ir.model.fields,field_description:account_padron_withholding_perception.field_account_import_padron_ret_perc__import_line_ids
+#: model_terms:ir.ui.view,arch_db:account_padron_withholding_perception.view_account_import_padron_ret_perc_form
+msgid "Import Lines"
+msgstr "Lineas del Importadas"
+
+#. module: account_padron_withholding_perception
+#: model:ir.actions.act_window,name:account_padron_withholding_perception.import_padron_retention_perception_action
+#: model:ir.ui.menu,name:account_padron_withholding_perception.menu_import_padron_retention_perception
+msgid "Import Padron Retention and Perception"
+msgstr "Importar Padrones de Retenciones y Percepciones"
+
+#. module: account_padron_withholding_perception
+#: model_terms:ir.ui.view,arch_db:account_padron_withholding_perception.view_account_import_padron_ret_perc_form
+msgid "Import Padron Server"
+msgstr "Importar del Sevidor"
+
+#. module: account_padron_withholding_perception
+#: model_terms:ir.ui.view,arch_db:account_padron_withholding_perception.view_partner_form_inherit
+msgid "Importar Padrones"
+msgstr "Importar Padrones"
+
+#. module: account_padron_withholding_perception
+#: model:ir.model.fields,field_description:account_padron_withholding_perception.field_account_padron_retention_perception_line__in_padron
+msgid "In Padron"
+msgstr "En Padrón"
+
+#. module: account_padron_withholding_perception
+#: model:ir.model,name:account_padron_withholding_perception.model_account_move
+msgid "Journal Entries"
+msgstr "Asientos contables"
+
+#. module: account_padron_withholding_perception
+#: model:ir.model,name:account_padron_withholding_perception.model_account_move_line
+msgid "Journal Item"
+msgstr "Elemento del Diario"
+
+#. module: account_padron_withholding_perception
+#: model:ir.model.fields,field_description:account_padron_withholding_perception.field_account_import_padron_ret_perc____last_update
+#: model:ir.model.fields,field_description:account_padron_withholding_perception.field_account_padron_retention_perception_line____last_update
+#: model:ir.model.fields,field_description:account_padron_withholding_perception.field_account_padron_retention_perception_type____last_update
+#: model:ir.model.fields,field_description:account_padron_withholding_perception.field_padron_update_cron____last_update
+msgid "Last Modified on"
+msgstr "Última modificación en"
+
+#. module: account_padron_withholding_perception
+#: model:ir.model.fields,field_description:account_padron_withholding_perception.field_account_import_padron_ret_perc__write_uid
+#: model:ir.model.fields,field_description:account_padron_withholding_perception.field_account_padron_retention_perception_line__write_uid
+#: model:ir.model.fields,field_description:account_padron_withholding_perception.field_account_padron_retention_perception_type__write_uid
+#: model:ir.model.fields,field_description:account_padron_withholding_perception.field_padron_update_cron__write_uid
+msgid "Last Updated by"
+msgstr "Última actualización realizada por"
+
+#. module: account_padron_withholding_perception
+#: model:ir.model.fields,field_description:account_padron_withholding_perception.field_account_import_padron_ret_perc__write_date
+#: model:ir.model.fields,field_description:account_padron_withholding_perception.field_account_padron_retention_perception_line__write_date
+#: model:ir.model.fields,field_description:account_padron_withholding_perception.field_account_padron_retention_perception_type__write_date
+#: model:ir.model.fields,field_description:account_padron_withholding_perception.field_padron_update_cron__write_date
+msgid "Last Updated on"
+msgstr "Última actualización el"
+
+#. module: account_padron_withholding_perception
+#: model:ir.model.fields,field_description:account_padron_withholding_perception.field_res_partner_arba_alicuot__padron_line_id
+msgid "Line Patterns"
+msgstr "Line Padron"
+
+#. module: account_padron_withholding_perception
+#: model_terms:ir.ui.view,arch_db:account_padron_withholding_perception.view_account_padron_retention_perception_type_form
+msgid "Lines Config Retention"
+msgstr "Lineas Configuración Retención"
+
+#. module: account_padron_withholding_perception
+#: model:ir.model.fields,field_description:account_padron_withholding_perception.field_account_padron_retention_perception_type__padron_line_ids
+msgid "Lines Retention"
+msgstr "Lineas Retención"
+
+#. module: account_padron_withholding_perception
+#: model:ir.model.fields,field_description:account_padron_withholding_perception.field_account_import_padron_ret_perc__ubication_file_import
+msgid "Location File Import"
+msgstr "Ubicación del Archivo"
+
+#. module: account_padron_withholding_perception
+#: model:ir.model.fields,field_description:account_padron_withholding_perception.field_account_import_padron_ret_perc__ubication_file_ret_import
+msgid "Location File Import 2 Ret"
+msgstr "Ubicacion Archivo ARBA Ret"
+
+#. module: account_padron_withholding_perception
+#: model:ir.model.fields,field_description:account_padron_withholding_perception.field_account_import_padron_ret_perc__ubication_file_perc_import
+msgid "Location File Import 3 Perc"
+msgstr "Ubicacion Archivo ARBA Perc"
+
+#. module: account_padron_withholding_perception
+#: model:ir.model.fields,field_description:account_padron_withholding_perception.field_account_padron_retention_perception_type__minimum_base_perception
+msgid "Minimum Base Perception"
+msgstr "Mínimo Monto Base de Percepción"
+
+#. module: account_padron_withholding_perception
+#: model:ir.model.fields,field_description:account_padron_withholding_perception.field_account_padron_retention_perception_type__minimum_base_retention
+msgid "Minimum Base Retention"
+msgstr "Mínimo Monto Base de Retención"
+
+#. module: account_padron_withholding_perception
+#: model:ir.model.fields,field_description:account_padron_withholding_perception.field_account_padron_retention_perception_type__minimum_calcule_perception
+msgid "Minimum Calcule Perception"
+msgstr "Mínimo Monto Calculado de Percepción"
+
+#. module: account_padron_withholding_perception
+#: model:ir.model.fields,field_description:account_padron_withholding_perception.field_account_padron_retention_perception_type__minimum_calcule_retention
+msgid "Minimum Calcule Retention"
+msgstr "Mínimo Monto Calculado de Retención"
+
+#. module: account_padron_withholding_perception
+#: model:ir.model.fields,field_description:account_padron_withholding_perception.field_account_padron_retention_perception_type__name
+msgid "Name"
+msgstr "Nombre"
+
+#. module: account_padron_withholding_perception
+#: code:addons/account_padron_withholding_perception/models/account_import_padron_ret_perc.py:0
+#, python-format
+msgid ""
+"No records were found for ARBA Padron Type {} between the dates {} and {}"
+msgstr ""
+"No se encontraron registros para el Tipo de Padrón ARBA{} entre las fechas "
+"{} y {}"
+
+#. module: account_padron_withholding_perception
+#: code:addons/account_padron_withholding_perception/models/account_import_padron_ret_perc.py:0
+#, python-format
+msgid ""
+"No records were found for AGIP Padron Type{} between the dates {} and {}"
+msgstr ""
+"No se encontraron registros para el Tipo de Padrón AGIP{} entre las fechas "
+"{} y {}"
+
+#. module: account_padron_withholding_perception
+#: code:addons/account_padron_withholding_perception/models/account_import_padron_ret_perc.py:0
+#, python-format
+msgid ""
+"No records were found for AGIP Padron Type{} between the dates {} and {}"
+msgstr ""
+"No se encontraron registros para el Tipo de Padrón AGIP{} entre las fechas {} y {}"
+
+#. module: account_padron_withholding_perception
+#: model_terms:ir.ui.view,arch_db:account_padron_withholding_perception.view_account_import_padron_ret_perc_form
+msgid "Old Import Padron File"
+msgstr "Importar desde Archivo"
+
+#. module: account_padron_withholding_perception
+#: model:ir.model.fields.selection,name:account_padron_withholding_perception.selection__account_import_padron_ret_perc__state__open
+msgid "Open"
+msgstr "Abierto"
+
+#. module: account_padron_withholding_perception
+#: model:ir.model.fields.selection,name:account_padron_withholding_perception.selection__account_import_padron_ret_perc__type__other
+#: model:ir.model.fields.selection,name:account_padron_withholding_perception.selection__account_padron_retention_perception_type__type__other
+msgid "Other"
+msgstr "Otros"
+
+#. module: account_padron_withholding_perception
+#: model:ir.module.category,name:account_padron_withholding_perception.padron_retention_perception
+msgid "Padron Retention Perception"
+msgstr "Padrón Retención Percepción"
+
+#. module: account_padron_withholding_perception
+#: model:ir.actions.act_window,name:account_padron_withholding_perception.padron_retention_perception_type_action
+#: model:ir.ui.menu,name:account_padron_withholding_perception.menu_padron_retention_perception_type
+msgid "Padron Retention and Perception"
+msgstr "Padrón Retención y Percepción"
+
+#. module: account_padron_withholding_perception
+#: model:ir.model.fields,field_description:account_padron_withholding_perception.field_account_move_line__ret_perc_type_ids
+#: model_terms:ir.ui.view,arch_db:account_padron_withholding_perception.view_partner_form_inherit
+msgid "Padron Type"
+msgstr "Tipo de Padron"
+
+#. module: account_padron_withholding_perception
+#: model:ir.model.fields,field_description:account_padron_withholding_perception.field_account_padron_retention_perception_line__partner_id
+msgid "Partner"
+msgstr "Contacto"
+
+#. module: account_padron_withholding_perception
+#: model_terms:ir.ui.view,arch_db:account_padron_withholding_perception.view_account_padron_retention_perception_type_form
+msgid "Partners"
+msgstr "Empresas"
+
+#. module: account_padron_withholding_perception
+#: code:addons/account_padron_withholding_perception/models/padron_update_cron.py:0
+#: model:ir.model,name:account_padron_withholding_perception.model_padron_update_cron
+#, python-format
+msgid "Patterns Update cron"
+msgstr "Actualización del cron de padrones"
+
+#. module: account_padron_withholding_perception
+#: model:ir.model,name:account_padron_withholding_perception.model_account_payment_group
+msgid "Payment Group"
+msgstr "Grupo de Pago"
+
+#. module: account_padron_withholding_perception
+#: model:ir.model.fields,field_description:account_padron_withholding_perception.field_account_padron_retention_perception_type__payment_journal_retention_id
+msgid "Payment Journal Retention"
+msgstr "Diario de Retención"
+
+#. module: account_padron_withholding_perception
+#: model:ir.model.fields,field_description:account_padron_withholding_perception.field_account_padron_retention_perception_line__percentage_perception
+msgid "Percentage Perception"
+msgstr "Porcentaje Percepción"
+
+#. module: account_padron_withholding_perception
+#: model:ir.model.fields,field_description:account_padron_withholding_perception.field_account_padron_retention_perception_line__percentage_retention
+msgid "Percentage Retention"
+msgstr "Porcentaje Retención"
+
+#. module: account_padron_withholding_perception
+#: model_terms:ir.ui.view,arch_db:account_padron_withholding_perception.view_account_padron_retention_perception_type_form
+msgid "Percepciones"
+msgstr "Percepciones"
+
+#. module: account_padron_withholding_perception
+#: model:ir.model.fields,field_description:account_padron_withholding_perception.field_account_padron_retention_perception_line__arba_alicuot_id
+msgid "Perception Related"
+msgstr "Percepción"
+
+#. module: account_padron_withholding_perception
+#: code:addons/account_padron_withholding_perception/models/account_move.py:0
+#, python-format
+msgid "Register Payment"
+msgstr "Registrar pago"
+
+#. module: account_padron_withholding_perception
+#: model:ir.model.fields,field_description:account_padron_withholding_perception.field_account_padron_retention_perception_type__line_partner_ids
+msgid "Rel Partner Padron"
+msgstr "Contacto Relacionado"
+
+#. module: account_padron_withholding_perception
+#: model:ir.model.fields,field_description:account_padron_withholding_perception.field_res_partner__line_padron_type_ids
+#: model:ir.model.fields,field_description:account_padron_withholding_perception.field_res_users__line_padron_type_ids
+msgid "Rel Partner Patterns"
+msgstr "Contacto Relacionado"
+
+#. module: account_padron_withholding_perception
+#: code:addons/account_padron_withholding_perception/models/account_import_padron_ret_perc.py:0
+#, python-format
+msgid ""
+"Error: The contact {} with ID({}) does not have a VAT identification number."
+msgstr ""
+"Error: el contacto {} con id ({}) no tiene un número de identificación."
+
+#. module: account_padron_withholding_perception
+#: code:addons/account_padron_withholding_perception/models/account_import_padron_ret_perc.py:0
+#, python-format
+msgid "Error: The contact {} with ID({}) is not from Argentina."
+msgstr "Error: el contacto {} con ID ({}) no es de Argentina."
+
+#. module: account_padron_withholding_perception
+#: model:res.groups,name:account_padron_withholding_perception.padron_retention_perception_responsible_group
+msgid "Responsible Padron Retention Perception"
+msgstr "Responsable del Padron de retención y percepción"
+
+#. module: account_padron_withholding_perception
+#: model_terms:ir.ui.view,arch_db:account_padron_withholding_perception.view_account_padron_retention_perception_type_form
+msgid "Withholding"
+msgstr "Retenciones"
+
+#. module: account_padron_withholding_perception
+#: model_terms:ir.ui.view,arch_db:account_padron_withholding_perception.view_move_form_inherit
+msgid "Withholding"
+msgstr "Retención"
+
+#. module: account_padron_withholding_perception
+#: model:ir.model.fields,field_description:account_padron_withholding_perception.field_account_import_padron_ret_perc__server_database
+#: model:ir.model.fields,field_description:account_padron_withholding_perception.field_account_padron_retention_perception_type__server_database
+msgid "Server Database"
+msgstr "Server Database"
+
+#. module: account_padron_withholding_perception
+#: model:ir.model.fields,field_description:account_padron_withholding_perception.field_account_import_padron_ret_perc__server_host
+#: model:ir.model.fields,field_description:account_padron_withholding_perception.field_account_padron_retention_perception_type__server_host
+msgid "Server Host"
+msgstr "Server Host"
+
+#. module: account_padron_withholding_perception
+#: model_terms:ir.ui.view,arch_db:account_padron_withholding_perception.view_account_import_padron_ret_perc_form
+#: model_terms:ir.ui.view,arch_db:account_padron_withholding_perception.view_account_padron_retention_perception_type_form
+msgid "Server Import"
+msgstr "Datos del Servidor"
+
+#. module: account_padron_withholding_perception
+#: model:ir.model.fields,field_description:account_padron_withholding_perception.field_account_import_padron_ret_perc__server_password
+#: model:ir.model.fields,field_description:account_padron_withholding_perception.field_account_padron_retention_perception_type__server_password
+msgid "Server Password"
+msgstr "Server Password"
+
+#. module: account_padron_withholding_perception
+#: model:ir.model.fields,field_description:account_padron_withholding_perception.field_account_import_padron_ret_perc__server_port
+#: model:ir.model.fields,field_description:account_padron_withholding_perception.field_account_padron_retention_perception_type__server_port
+msgid "Server Port"
+msgstr "Server Port"
+
+#. module: account_padron_withholding_perception
+#: model:ir.model.fields,field_description:account_padron_withholding_perception.field_account_import_padron_ret_perc__server_user
+#: model:ir.model.fields,field_description:account_padron_withholding_perception.field_account_padron_retention_perception_type__server_user
+msgid "Server User"
+msgstr "Server User"
+
+#. module: account_padron_withholding_perception
+#: model_terms:ir.ui.view,arch_db:account_padron_withholding_perception.res_config_settings_view_form
+msgid ""
+"If it is activated, when creating a client or supplier, the system will look for withholding rates and perceptions for it.\n"
+"                            Attention: the creation process can take several minutes."
+msgstr ""
+"Si es activado, al crear un cliente o proveedor el sistema buscará alícuotas de retenciones y percepciones para este.\n"
+"                            Atención: el proceso de creación puede demorarse varios minutos."
+
+#. module: account_padron_withholding_perception
+#: model:ir.model.fields,field_description:account_padron_withholding_perception.field_account_import_padron_ret_perc__state
+msgid "State"
+msgstr "Estado"
+
+#. module: account_padron_withholding_perception
+#: model:ir.model.fields,field_description:account_padron_withholding_perception.field_account_import_padron_ret_perc__type
+#: model:ir.model.fields,field_description:account_padron_withholding_perception.field_account_padron_retention_perception_type__type
+msgid "Type"
+msgstr "Tipo"
+
+#. module: account_padron_withholding_perception
+#: model:ir.model.fields,field_description:account_padron_withholding_perception.field_account_import_padron_ret_perc__padron_type_id
+#: model:ir.model.fields,field_description:account_padron_withholding_perception.field_account_padron_retention_perception_line__padron_type_id
+msgid "Type Padron"
+msgstr "Tipo de Padron"
+
+#. module: account_padron_withholding_perception
+#: model:ir.actions.server,name:account_padron_withholding_perception.update_padron_ir_actions_server
+#: model:ir.cron,cron_name:account_padron_withholding_perception.update_padron
+#: model:ir.cron,name:account_padron_withholding_perception.update_padron
+msgid "Update Padron"
+msgstr "Actualizar Padron"
+
+#. module: account_padron_withholding_perception
+#: code:addons/account_padron_withholding_perception/models/account_move.py:0
+#, python-format
+msgid "You can only register payment if invoice is open"
+msgstr "Solo puede Registrar un pago si la factura esta Abierta"
+
+#. module: account_padron_withholding_perception
+#: model:ir.model.fields,field_description:account_padron_withholding_perception.field_res_config_settings__check_census_on_create
+msgid "¿Looking for aliquots of withholdings and perceptions in partner?"
+msgstr "¿Buscar alícuotas de retenciones y percepciones en partner?"
+
+#. module: account_padron_withholding_perception
+#: code:addons/account_padron_withholding_perception/models/account_payment_group.py:0
+#, python-format
+msgid ""
+"The minimum base/calculated withholding {} is higher or equal than the "
+"untaxed amount in the invoice, so it is not applied in this payment"
+msgstr ""
+"La base mínima/retención calculada {} es superior o igual a la "
+"cantidad no gravada en la factura, por lo que no se aplica en este pago"
+
+#. module: account_padron_withholding_perception
+#: code:addons/account_padron_withholding_perception/models/account_payment_group.py:0
+#, python-format
+msgid ""
+"The minimum base/calculated withholding {} is higher than the untaxed amount"
+" on some of the invoices, so the following discount {} is applied to "
+"withholding on the total in this payment."
+msgstr ""
+"La base mínima/retención calculada {} es superior a la cantidad no gravada"
+" en algunas de las facturas, por lo que se aplica el siguiente descuento {} a "
+"retención sobre el total de este pago."
+
+#. module: account_padron_withholding_perception
+#: model_terms:ir.ui.view,arch_db:account_padron_withholding_perception.view_account_padron_retention_perception_type_form
+msgid "Perceptions"
+msgstr "Percepciones"
+
+#. module: account_padron_withholding_perception
+#: code:addons/account_padron_withholding_perception/models/account_padron_retention_perception_line.py:0
+#, python-format
+msgid "Please, select a company for padron type: {}"
+msgstr "Por favor, seleccione una empresa para el tipo de padrón: {}"

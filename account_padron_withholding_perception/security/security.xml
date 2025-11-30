@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo noupdate="0">
+	<record id="padron_retention_perception" model="ir.module.category">
+	    <field name="name">Padron Retention Perception</field>
+	    <field name="sequence">1</field>
+	    <field name="description">Base category for the Retention and Perception Patterns</field>
+	</record>
+	<record id="padron_retention_perception_responsible_group" model="res.groups">
+	    <field name="name">Responsible Padron Retention Perception</field>
+	    <field name="category_id" ref="padron_retention_perception"/>
+	    <field name="users" eval="[(4, ref('base.user_root'))]"/>
+	</record>
+</odoo>
