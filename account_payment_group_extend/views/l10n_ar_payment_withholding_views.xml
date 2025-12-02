@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="view_l10n_ar_payment_withholding_form" model="ir.ui.view">
+        <field name="name">l10n_ar.payment.withholding.form</field>
+        <field name="model">l10n_ar.payment.withholding</field>
+        <field name="inherit_id" ref="l10n_ar_withholding_ux.view_l10n_ar_payment_withholding_form"/>
+        <field name="arch" type="xml">
+            <field name="accumulated_amount" position="attributes">
+                <attribute name="invisible">not automatic</attribute>
+            </field>
+            <field name="previous_withholding_amount" position="attributes">
+                <attribute name="invisible">not automatic</attribute>
+            </field>
+            <field name="period_withholding_amount" position="attributes">
+                <attribute name="invisible">not automatic</attribute>
+            </field>
+            <field name="period_withholding_amount" position="attributes">
+                <attribute name="invisible">not automatic</attribute>
+            </field>
+            <field name="previous_withholding_amount" position="attributes">
+                <attribute name="invisible">not automatic</attribute>
+            </field>
+            <field name="accumulated_amount" position="attributes">
+                <attribute name="invisible">not automatic</attribute>
+            </field>
+        </field>
+    </record>
+
+</odoo>

@@ -259,8 +259,8 @@ class AccountPaymentGroup(models.Model):
             # al final vimos con varios clientes que este monto base
             # debe ser la base imponible de lo que se está pagando en este
             # voucher
-            vals['base_amount'] = vals.get('withholdable_advanced_amount') + vals.get('withholdable_invoiced_amount')
-            vals['amount'] = computed_withholding_amount
+            vals['base_amount'] = vals.get('withholdable_invoiced_amount', 0.0)
+            vals['amount'] = vals.get("amount", 0.0)
             vals['computed_withholding_amount'] = computed_withholding_amount
             vals['period_withholding_amount'] = computed_withholding_amount + vals['previous_withholding_amount']
             prev_payments_domain, prev_withholding_domain = self.get_tax_period_payments_domain(tax, self)
@@ -270,7 +270,13 @@ class AccountPaymentGroup(models.Model):
                 sum_withholdable_invoiced_amount = sum(previous_withholding.mapped("withholdable_invoiced_amount"))
                 vals["accumulated_amount"] = sum_withholdable_invoiced_amount
                 vals["total_amount"] = sum_withholdable_invoiced_amount + vals["withholdable_invoiced_amount"]
+            regimen = self.regimen_ganancias_id
+            non_taxable_amount = 0
+            if regimen:
+                non_taxable_amount = regimen.montos_no_sujetos_a_retencion
+            vals["withholding_non_taxable_amount"] = non_taxable_amount
             vals["withholdable_base_amount"] = vals.get("total_amount", 0) - vals.get("withholding_non_taxable_amount", 0)
+            vals["automatic"] = True
 
             vals.pop("tax_withholding_id")
             vals.pop("date")
@@ -654,6 +660,7 @@ class AccountPaymentGroup(models.Model):
                     base_amount, regimen.porcentaje_no_inscripto / 100.0)
             vals['communication'] = "%s - %s" % (
                 regimen.codigo_de_regimen, regimen.concepto_referencia)
+        vals["amount"] = amount
         return vals
 
     def get_tax_period_payments_domain(self, tax, payment):
@@ -674,8 +681,8 @@ class AccountPaymentGroup(models.Model):
 
         previous_payments_domain = [
             ('partner_id.commercial_partner_id', '=', payment.partner_id.commercial_partner_id.id),
-            ('date', '<=', to_date),
-            ('date', '>=', from_date),
+            ('payment_date', '<=', to_date),
+            ('payment_date', '>=', from_date),
             ('state', 'not in', ['draft', 'cancel', 'confirmed']),
             ('company_id', '=', payment.company_id.id),
         ]
@@ -686,9 +693,9 @@ class AccountPaymentGroup(models.Model):
         # draft ones as they are also considered by public_budget)
         previous_withholdings_domain = [
             ('payment_group_id.partner_id.commercial_partner_id', '=', payment.partner_id.commercial_partner_id.id),
-            ('payment_group_id.date', '<=', to_date),
-            ('payment_group_id.date', '>=', from_date),
-            # ('payment_group_id.state', '=', 'posted'),
+            ('payment_group_id.payment_date', '<=', to_date),
+            ('payment_group_id.payment_date', '>=', from_date),
+            ('payment_group_id.state', '=', 'posted'),
             ('tax_id', '=', tax.id),
         ]
 
