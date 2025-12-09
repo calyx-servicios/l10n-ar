@@ -277,14 +277,17 @@ class AccountPaymentGroup(models.Model):
             vals["withholding_non_taxable_amount"] = non_taxable_amount
             vals["withholdable_base_amount"] = vals.get("total_amount", 0) - vals.get("withholding_non_taxable_amount", 0)
             vals["automatic"] = True
-
-            vals.pop("tax_withholding_id")
-            vals.pop("date")
-            vals.pop("communication")
+            if "tax_withholding_id" in vals:
+                vals.pop("tax_withholding_id")
+            if "date" in vals:
+                vals.pop("date")
+            if "communication" in vals:
+                vals.pop("communication")
+            if "comment" in vals:
+                vals.pop('comment')
 
             # por ahora no imprimimos el comment, podemos ver de llevarlo a
             # otro campo si es de utilidad
-            vals.pop('comment')
             vals['payment_id'] = False
             vals["payment_group_id"] = self.id
             vals["tax_id"] = tax.id
