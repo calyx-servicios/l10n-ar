@@ -8,9 +8,10 @@ class AccountMoveLine(models.Model):
     @api.onchange('product_id', 'tax_ids')
     def onchange_product_id_perception(self):
         if self.move_id.partner_id and self.move_id.move_type in ('out_invoice', 'out_refund'):
-            if self.move_id.partner_id.line_padron_type_ids and self.product_id:
+            if self.move_id.partner_id.line_padron_type_ids and self.product_id and self.move_id.invoice_date:
                 arba_line = self.move_id.partner_id.arba_alicuot_ids.filtered(
-                    lambda x: x.to_date >= self.move_id.invoice_date
+                    lambda x: x.to_date and x.from_date and 
+                    x.to_date >= self.move_id.invoice_date
                     and x.from_date <= self.move_id.invoice_date
                     and x.company_id.id == self.move_id.company_id.id
                 )

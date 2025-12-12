@@ -22,12 +22,15 @@ class AccountPadronRetentionPerceptionLine(models.Model):
 
 
     def create_arba_perception_line(self):
-        # Crear las percepciones
+        # Crear las percepciones y/o retenciones
         for self_obj in self:
             if not self_obj.padron_type_id.company_id:
                 raise UserError(_('Please, select a company for padron type: {}'.format(self_obj.padron_type_id.name)))
+            
+            if self_obj.percentage_perception > 0 and not self_obj.padron_type_id.account_tag_perception_id:
+                raise UserError(_('Please, configure the "Account Tag Perception" field for padron type: {} (needed for perceptions)'.format(self_obj.padron_type_id.name)))
+            
             vals = {
-                'tag_id': self_obj.padron_type_id.account_tag_perception_id.id ,
                 'from_date': self_obj.date_from ,
                 'to_date': self_obj.date_to ,
                 'company_id': self_obj.padron_type_id.company_id.id,
@@ -36,6 +39,9 @@ class AccountPadronRetentionPerceptionLine(models.Model):
                 'partner_id': self_obj.partner_id.id,
                 'padron_line_id': self_obj.id,
             }
+
+            if self_obj.padron_type_id.account_tag_perception_id:
+                vals['tag_id'] = self_obj.padron_type_id.account_tag_perception_id.id
             if not self_obj.arba_alicuot_id:
 
                 arba_alicuot = self.env['res.partner.arba_alicuot'].sudo().create(vals)
