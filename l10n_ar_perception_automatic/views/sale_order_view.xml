@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    
+    <record id="view_sale_order_form_perception_automatic" model="ir.ui.view">
+        <field name="name">sale.order.form.perception.automatic</field>
+        <field name="model">sale.order</field>
+        <field name="inherit_id" ref="sale.view_order_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//header" position="inside">
+                <button name="calculate_perceptions"
+                        type="object"
+                        string="Calcular Percepciones"
+                        class="btn-primary"
+                        invisible="state in ('cancel', 'done') or not date_order or not order_line"
+                        help="Calcula y aplica automáticamente las percepciones correspondientes"/>
+            </xpath>
+        </field>
+    </record>
+
+</odoo>
+
+

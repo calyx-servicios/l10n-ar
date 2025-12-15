@@ -10,7 +10,7 @@
     "website": "http://odoo.calyx-cloud.com.ar/",
     "license": "AGPL-3",
     "category": "Account",
-    "version": "18.0.7.0.1",
+    "version": "18.0.7.0.2",
     "installable": True,
     "application": False,
     "depends": [
@@ -32,5 +32,6 @@
         # 'views/account_move_view.xml',
         'views/account_padron_retention_perception_type_view.xml',
         'views/res_partner_view.xml',
+        'views/account_tax_view.xml',
     ],
 }

@@ -51,6 +51,8 @@
                         invisible="not sent or state != 'posted'"/>
                 <button name="post" class="oe_highlight" string="Validar" type="object" 
                         invisible="(payment_subtype == 'simple' and state != 'draft') or (payment_subtype == 'double_validation' and state != 'confirmed')"/>
+                <button name="compute_withholdings" class="oe_highlight" string="Calcular retenciones" type="object" 
+                        invisible="state != 'draft' or partner_type != 'supplier'"/>
                 <button name="action_draft" invisible="state != 'cancel'" string="Volver a borrador" type="object"/>
                 <button name="confirm" class="oe_highlight" string="Confirmar" type="object" 
                         groups="account_payment_group.account_confirm_payment" 
@@ -197,10 +199,8 @@
                     </notebook>
                                         
             </sheet>
-        <div class="oe_chatter">
-            <field name="message_follower_ids" widget="mail_followers" groups="base.group_user"/>
-            <field name="message_ids" widget="mail_thread"/>
-        </div>
+            <div class="o_attachment_preview"/>
+            <chatter/>
         </form>
     </field>
 </record>

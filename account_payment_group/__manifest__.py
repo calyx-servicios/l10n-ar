@@ -1,6 +1,6 @@
 {
     "name": "Grupos de Pago con Múltiples Métodos",
-    "version": "18.0.1.0.4",
+    "version": "18.0.1.0.5",
     "category": "Accounting",
     "icon": '/account/static/description/icon.png',
     "author": "ADHOC SA, Exemax, Codize, Birtum",

@@ -12,6 +12,18 @@
                     <field name="line_padron_type_ids" widget="many2many" groups="account_padron_withholding_perception.padron_retention_perception_responsible_group"/>
                 </page>
             </xpath>
+            <xpath expr="//field[@name='drei']" position="after">
+                <field name="arba_alicuot_ids" nolabel="1">
+                    <list editable="bottom">
+                        <field name="tag_id"/>
+                        <field name="from_date"/>
+                        <field name="to_date"/>
+                        <field name="alicuota_percepcion"/>
+                        <field name="alicuota_retencion"/>
+                        <field name="company_id" groups="base.group_multi_company"/>
+                    </list>
+                </field>
+            </xpath>
         </field>
     </record>
 </odoo>

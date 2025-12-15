@@ -171,7 +171,7 @@ class AccountPayment(models.Model):
                 'partner_type': rec.partner_type,
                 'partner_id': rec.partner_id.id,
                 'payment_date': rec.date,
-                'communication': rec.ref,
+                'communication': rec.memo,
             })
             rec.payment_group_id.post()
         return recs

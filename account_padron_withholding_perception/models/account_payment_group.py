@@ -5,47 +5,62 @@ class AccountPaymentGroup(models.Model):
 
     def compute_withholdings(self):
         self.ensure_one()
+
         result = super(AccountPaymentGroup, self).compute_withholdings()
 
-        # Get alicut
+        # Solo procesar para proveedores
+        if self.partner_type != 'supplier':
+            return result
+
+        # Get alicuot
         arba_line = self._find_arba_alicuot()
+        if not arba_line:
+            return result
 
         # Get padron type
         padron_type = self._find_padron_type(arba_line)
-
-        # Search withholding payment line
-        retention_line = self._search_line_retention(padron_type.account_tax_retention_id)
+        if not padron_type or not padron_type.account_tax_retention_id:
+            return result
 
         # Get all debt lines
         to_pay_lines = self._get_all_to_pay_lines()
+        if not to_pay_lines:
+            return result
 
         total_debt_untaxed = sum(to_pay_lines.mapped('move_id.amount_untaxed'))
         total_alicuot = total_debt_untaxed * arba_line.alicuota_retencion / 100
 
+        total_to_discount = self._total_amount_retention(
+            padron_type.minimum_base_retention, 
+            arba_line.alicuota_retencion, 
+            padron_type.minimum_calcule_retention
+        )
+
         display_msg = False
-        if retention_line:
-            total_to_discount = self._total_amount_retention(
-                padron_type.minimum_base_retention, arba_line.alicuota_retencion, padron_type.minimum_calcule_retention
-            )
-            if total_to_discount >= total_alicuot:
+        if total_to_discount >= total_alicuot:
+            display_msg = _(
+                'The minimum base/calculated withholding {} is higher or equal than the untaxed amount '
+                'in the invoice, so it is not applied in this payment'
+            ).format(padron_type.minimum_base_retention)
+        else:
+            if total_to_discount > 0:
                 display_msg = _(
-                    'The minimum base/calculated withholding {} is higher or equal than the untaxed amount '
-                    'in the invoice, so it is not applied in this payment'
-                ).format(padron_type.minimum_base_retention)
-                retention_line.unlink()
-            else:
-                if total_to_discount > 0:
-                    display_msg = _(
-                        'The minimum base/calculated withholding {} is higher than the untaxed amount '
-                        'on some of the invoices, so the following discount {} is applied to '
-                        'withholding on the total in this payment.'
-                    ).format(padron_type.minimum_base_retention, total_to_discount)
+                    'The minimum base/calculated withholding {} is higher than the untaxed amount '
+                    'on some of the invoices, so the following discount {} is applied to '
+                    'withholding on the total in this payment.'
+                ).format(padron_type.minimum_base_retention, total_to_discount)
 
-                amount_retention = total_alicuot - total_to_discount
-                self.create_retention(retention_line, amount_retention, total_debt_untaxed)
+            amount_retention = total_alicuot - total_to_discount
+            if amount_retention > 0:
+                self._create_arba_withholding_payment(
+                    padron_type.account_tax_retention_id,
+                    amount_retention,
+                    total_debt_untaxed
+                )
 
-            if display_msg:
-                self.message_post(body=display_msg)
+        if display_msg:
+            self.message_post(body=display_msg)
+        
         return result
 
     def _find_arba_alicuot(self):
@@ -61,9 +76,6 @@ class AccountPaymentGroup(models.Model):
         return arba_line.padron_line_id.padron_type_id.filtered(
             lambda x: x.company_id.id == self.company_id.id
         )
-
-    def _search_line_retention(self, tax):
-        return self.payment_ids.filtered(lambda x: x.tax_withholding_id.id == tax.id)
 
     def _total_amount_retention(self, base_minimum_retention, percent_retention_arba, minimum_calcule_retention):
         """
@@ -90,16 +102,29 @@ class AccountPaymentGroup(models.Model):
     def _get_all_to_pay_lines(self):
         return self.to_pay_move_line_ids.filtered(lambda x: x.move_id.move_type in ["in_invoice", "in_refund"])
 
-    def create_retention(self, obj_ret, amount_retention, base_retention):
-        vals = {
-            'withholding_base_amount': base_retention,
-            'withholdable_invoiced_amount': base_retention,
-            'computed_withholding_amount': amount_retention,
-            'previous_withholding_amount': 0.0,
+    def _create_arba_withholding_payment(self, tax, amount_retention, base_retention):
+        self.ensure_one()
+        
+        # Buscar el journal de retenciones
+        withholding_journal = self.env['account.journal'].search([
+            ('type', 'in', ['bank', 'cash']),
+            ('company_id', '=', self.company_id.id)
+        ], limit=1)
+        
+        if not withholding_journal:
+            return
+        
+        # Crear el payment de retención por alicuota
+        payment_vals = {
+            'payment_group_id': self.id,
+            'payment_type': 'outbound',
+            'partner_type': 'supplier',
+            'partner_id': self.partner_id.id,
             'amount': amount_retention,
-            'accumulated_amount': 0.0,
-            'total_amount': base_retention,
-            'withholdable_base_amount': base_retention,
-            'period_withholding_amount': amount_retention,
+            'currency_id': self.currency_id.id,
+            'date': self.payment_date,
+            'journal_id': withholding_journal.id,
+            'memo': _('ARBA Withholding - Tax: %s') % tax.name,
         }
-        obj_ret.write(vals)
+        
+        self.env['account.payment'].create([payment_vals])

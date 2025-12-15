@@ -110,6 +110,87 @@ class AccountImportPadronRetPerc(models.Model):
         _logger.info("_get_conn: ")
         return psycopg2.connect(host=import_obj.server_host, port=import_obj.server_port, database=import_obj.server_database, user=import_obj.server_user, password=import_obj.server_password)
 
+    def download_full_padron_percepciones(self, context=None):
+        """
+        Descarga el padrón completo de percepciones de ARBA
+        """
+        for import_obj in self:
+            _logger.info("download_full_padron_percepciones() --> for %s" % str(import_obj))
+            
+            date_from = str(import_obj.default_date_from)[:4] + str(import_obj.default_date_from)[5:7] + str(import_obj.default_date_from)[8:10]
+            date_to = str(import_obj.default_date_to)[:4] + str(import_obj.default_date_to)[5:7] + str(import_obj.default_date_to)[8:10]
+            
+            conn = None
+            try:
+                # Consulta para obtener todos los registros de percepciones
+                consulta = 'SELECT col3, col4, col5, col9 FROM arbaper ORDER BY col5'
+                
+                conn = self._get_conn(import_obj)
+                cur = conn.cursor()
+                cur.execute(consulta)
+                
+                # Preparar las fechas finales
+                date_from_final = date_from[0:4] + '-' + date_from[4:6] + '-' + date_from[6:8]
+                date_to_final = date_to[0:4] + '-' + date_to[4:6] + '-' + date_to[6:8]
+                
+                total_records = 0
+                records_in_range = 0
+                
+                for line in cur.fetchall():
+                    total_records += 1
+                    
+                    # Formatear las fechas del servidor
+                    string_from = str(line[0])
+                    if len(string_from) < 8:
+                        string_from = '0' + string_from
+                    date_from_server = string_from[4:8] + string_from[2:4] + string_from[:2]
+                    
+                    string_to = str(line[1])
+                    if len(string_to) < 8:
+                        string_to = '0' + string_to
+                    date_to_server = string_to[4:8] + string_to[2:4] + string_to[:2]
+                    
+                    # Filtrar por rango de fechas
+                    if int(date_from) <= int(date_from_server) and int(date_to) >= int(date_to_server):
+                        records_in_range += 1
+                        cuit = str(line[2])
+                        percentage_perception = (str(line[3]).replace('.', '')).replace(',', '.')
+                        
+                        # Log de los datos
+                        _logger.info("CUIT: %s, Percepción: %s%%, Desde: %s, Hasta: %s" % (
+                            cuit, percentage_perception, 
+                            date_from_server[6:8] + "/" + date_from_server[4:6] + "/" + date_from_server[:4],
+                            date_to_server[6:8] + "/" + date_to_server[4:6] + "/" + date_to_server[:4]
+                        ))
+                
+                cur.close()
+                
+                # Mensaje final con estadísticas
+                msg = _("Padrón de Percepciones ARBA descargado: {} registros totales, {} en el rango de fechas {} - {}").format(
+                    total_records, records_in_range,
+                    date_from[6:8] + "/" + date_from[4:6] + "/" + date_from[:4],
+                    date_to[6:8] + "/" + date_to[4:6] + "/" + date_to[:4]
+                )
+                _logger.info(msg)
+                
+                return {
+                    'type': 'ir.actions.client',
+                    'tag': 'display_notification',
+                    'params': {
+                        'title': _('Descarga Completa'),
+                        'message': msg,
+                        'type': 'success',
+                        'sticky': False,
+                    }
+                }
+                
+            except Exception as e:
+                _logger.error("Error al descargar padrón completo: %s" % str(e))
+                raise ValidationError(_("Error al descargar el padrón completo de percepciones: %s") % str(e))
+            finally:
+                if conn is not None:
+                    conn.close()
+
     def search_table_arba(self, import_obj, partner_dic, date_from, date_to):
         _logger.info("search_table_arba")
         # armar primero el where segun la columna que corresponda con los partner y las fechas
@@ -207,7 +288,8 @@ class AccountImportPadronRetPerc(models.Model):
         cur = conn.cursor()
         cur.execute(consulta)
 
-        for line in cur.fetchall():
+        results = cur.fetchall()
+        for line in results:
             string_from = str(line[0])
             if len(string_from) < 8:
                 string_from = '0' + string_from
