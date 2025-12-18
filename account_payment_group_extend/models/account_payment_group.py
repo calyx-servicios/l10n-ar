@@ -244,8 +244,16 @@ class AccountPaymentGroup(models.Model):
             # y terminar dando error en el asiento por debitos y creditos no
             # son iguales, algo parecido hace odoo en el compute_all de taxes
             currency = self.currency_id
+            period_withholding_amount = currency.round(vals.get('period_withholding_amount', 0.0))
             previous_withholding_amount = 0
             # withholding can not be negative
+            computed_withholding_amount = max(0, (period_withholding_amount - previous_withholding_amount))
+            payment_withholding = self.l10n_ar_withholding_line_ids.filtered(lambda x: x.tax_id == tax)
+            if not computed_withholding_amount:
+                # if on refresh no more withholding, we delete if it exists
+                if payment_withholding:
+                    commands.append(Command.delete(payment_withholding.id))
+                continue
 
             # we copy withholdable_base_amount on base_amount
             # al final vimos con varios clientes que este monto base
@@ -253,6 +261,8 @@ class AccountPaymentGroup(models.Model):
             # voucher
             vals['base_amount'] = vals.get('withholdable_invoiced_amount', 0.0)
             vals['amount'] = vals.get("amount", 0.0)
+            vals['computed_withholding_amount'] = computed_withholding_amount
+            vals['period_withholding_amount'] = computed_withholding_amount + vals['previous_withholding_amount']
             prev_payments_domain, prev_withholding_domain = self.get_tax_period_payments_domain(tax, self)
             prev_payments = self.env["account.payment.group"].search(prev_payments_domain)
             previous_withholding = self.env['l10n_ar.payment.withholding'].search(prev_withholding_domain)
@@ -265,32 +275,38 @@ class AccountPaymentGroup(models.Model):
             if regimen:
                 non_taxable_amount = regimen.montos_no_sujetos_a_retencion
             vals["withholding_non_taxable_amount"] = non_taxable_amount
-            withholdable_base_amount = vals.get("total_amount", 0) - vals.get("withholding_non_taxable_amount", 0)
-            vals["withholdable_base_amount"] = withholdable_base_amount
-            percentage = 0
-            if self.retencion_ganancias and self.retencion_ganancias == "nro_regimen":
-                regimen = self.regimen_ganancias_id
-                if regimen:
-                    partner = self.partner_id
-                    if partner and partner.l10n_ar_afip_responsibility_type_id:
-                        responsibility = partner.l10n_ar_afip_responsibility_type_id
-                        RI = self.env.ref("l10n_ar.res_IVARI")
-                        if responsibility and responsibility.id == RI.id:
-                            percentage = regimen.porcentaje_inscripto / 100
-                        else:
-                            percentage = regimen.porcentaje_no_inscripto / 100
+            vals["withholdable_base_amount"] = vals.get("total_amount", 0) - vals.get("withholding_non_taxable_amount", 0)
 
-            period_withholding_amount = withholdable_base_amount * percentage
-            vals['period_withholding_amount'] = period_withholding_amount
-            computed_withholding_amount = vals["period_withholding_amount"] - vals["previous_withholding_amount"]
-            vals['computed_withholding_amount'] = computed_withholding_amount
-            vals['amount'] = computed_withholding_amount
-            payment_withholding = self.l10n_ar_withholding_line_ids.filtered(lambda x: x.tax_id == tax)
-            if not computed_withholding_amount:
-                # if on refresh no more withholding, we delete if it exists
-                if payment_withholding:
-                    commands.append(Command.delete(payment_withholding.id))
+            if tax.withholding_type == "tabla_ganancias":
+                withholdable_base_amount = vals.get("total_amount", 0) - vals.get("withholding_non_taxable_amount", 0)
+                vals["withholdable_base_amount"] = withholdable_base_amount
+                percentage = 0
+                if self.retencion_ganancias and self.retencion_ganancias == "nro_regimen":
+                    regimen = self.regimen_ganancias_id
+                    if regimen:
+                        partner = self.partner_id
+                        if partner and partner.l10n_ar_afip_responsibility_type_id:
+                            responsibility = partner.l10n_ar_afip_responsibility_type_id
+                            RI = self.env.ref("l10n_ar.res_IVARI")
+                            if responsibility and responsibility.id == RI.id:
+                                percentage = regimen.porcentaje_inscripto / 100
+                            else:
+                                percentage = regimen.porcentaje_no_inscripto / 100
+
+                period_withholding_amount = withholdable_base_amount * percentage
+                vals['period_withholding_amount'] = period_withholding_amount
+                computed_withholding_amount = vals["period_withholding_amount"] - vals["previous_withholding_amount"]
+                vals['computed_withholding_amount'] = computed_withholding_amount
+                vals['amount'] = computed_withholding_amount
+                payment_withholding = self.l10n_ar_withholding_line_ids.filtered(lambda x: x.tax_id == tax)
+                if not computed_withholding_amount:
+                    # if on refresh no more withholding, we delete if it exists
+                    if payment_withholding:
+                        commands.append(Command.delete(payment_withholding.id))
+                    continue
+            if vals["amount"] <= 0:
                 continue
+
             vals["automatic"] = True
             if "tax_withholding_id" in vals:
                 vals.pop("tax_withholding_id")
