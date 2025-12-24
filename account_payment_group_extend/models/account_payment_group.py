@@ -306,6 +306,8 @@ class AccountPaymentGroup(models.Model):
             vals['payment_id'] = False
             vals["payment_group_id"] = self.id
             vals["tax_id"] = tax.id
+            import ipdb
+            ipdb.set_trace()
             self.env["l10n_ar.payment.withholding"].create(vals)
 
     def _get_withholdable_amounts(
