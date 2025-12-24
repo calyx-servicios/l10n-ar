@@ -149,9 +149,6 @@
                                         Importe del comprobante que origina la retención:
                                     </td>
                                     <td class="text-left">
-                                        <t t-if="o.payment_group_id.currency_id">
-                                            <span t-esc="o.payment_group_id.currency_id.symbol"/>
-                                        </t>
                                         <span t-esc="o.base_amount"/>
                                     </td>
                                 </tr>
@@ -160,9 +157,6 @@
                                         Importe de la retención:
                                     </td>
                                     <td class="text-left">
-                                        <t t-if="o.payment_group_id.currency_id">
-                                            <span t-esc="o.payment_group_id.currency_id.symbol"/>
-                                        </t>
                                         <span t-esc="o.amount"/>
                                     </td>
                                 </tr>
