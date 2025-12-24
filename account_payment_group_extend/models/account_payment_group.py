@@ -276,9 +276,9 @@ class AccountPaymentGroup(models.Model):
                         responsibility = partner.l10n_ar_afip_responsibility_type_id
                         RI = self.env.ref("l10n_ar.res_IVARI")
                         if responsibility and responsibility.id == RI.id:
-                            percentage = regimen.porcentaje_inscripto / 100
+                            percentage = regimen.porcentaje_inscripto
                         else:
-                            percentage = regimen.porcentaje_no_inscripto / 100
+                            percentage = regimen.porcentaje_no_inscripto
 
             period_withholding_amount = withholdable_base_amount * percentage
             vals['period_withholding_amount'] = period_withholding_amount
