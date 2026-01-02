@@ -10,11 +10,10 @@
     "website": "http://odoo.calyx-cloud.com.ar/",
     "license": "AGPL-3",
     "category": "Account",
-    "version": "18.0.7.0.2",
+    "version": "18.0.7.1.0",
     "installable": True,
     "application": False,
     "depends": [
-        'account_payment_group',
         'l10n_ar_tax_ratio',
         'l10n_ar_tax_backward_compatibility',
         'l10n_ar_tax',

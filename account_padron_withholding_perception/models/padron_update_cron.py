@@ -27,8 +27,8 @@ class PadronUpdateCron(models.Model):
         if next_month:
             date_from = get_next_month(date_from)
         date_to = (get_next_month(date_from) -
-                   datetime.timedelta(days=1)).strftime('%Y %m %d %H:%M:%S')
-        date_from = date_from.strftime('%Y %m %d %H:%M:%S')
+                   datetime.timedelta(days=1)).strftime('%Y-%m-%d %H:%M:%S')
+        date_from = date_from.strftime('%Y-%m-%d %H:%M:%S')
         for padron in self.env['account.padron.retention.perception.type'].search([]):
             try:
                 if padron.server_host and padron.server_database and padron.server_user \
