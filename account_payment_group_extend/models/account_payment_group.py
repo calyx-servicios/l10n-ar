@@ -300,10 +300,7 @@ class AccountPaymentGroup(models.Model):
                 vals['computed_withholding_amount'] = computed_withholding_amount
                 vals['amount'] = computed_withholding_amount
                 payment_withholding = self.l10n_ar_withholding_line_ids.filtered(lambda x: x.tax_id == tax)
-                if not computed_withholding_amount:
-                    # if on refresh no more withholding, we delete if it exists
-                    if payment_withholding:
-                        commands.append(Command.delete(payment_withholding.id))
+                if vals['amount'] <= 0:
                     continue
 
 
