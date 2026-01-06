@@ -277,6 +277,36 @@ class AccountPaymentGroup(models.Model):
             vals["withholding_non_taxable_amount"] = non_taxable_amount
             vals["withholdable_base_amount"] = vals.get("total_amount", 0) - vals.get("withholding_non_taxable_amount", 0)
             vals["automatic"] = True
+
+            if tax.withholding_type == "tabla_ganancias":
+                withholdable_base_amount = vals.get("total_amount", 0) - vals.get("withholding_non_taxable_amount", 0)
+                vals["withholdable_base_amount"] = withholdable_base_amount
+                percentage = 0
+                if self.retencion_ganancias and self.retencion_ganancias == "nro_regimen":
+                    regimen = self.regimen_ganancias_id
+                    if regimen:
+                        partner = self.partner_id
+                        if partner and partner.l10n_ar_afip_responsibility_type_id:
+                            responsibility = partner.l10n_ar_afip_responsibility_type_id
+                            RI = self.env.ref("l10n_ar.res_IVARI")
+                            if responsibility and responsibility.id == RI.id:
+                                percentage = regimen.porcentaje_inscripto / 100
+                            else:
+                                percentage = regimen.porcentaje_no_inscripto / 100
+
+                period_withholding_amount = withholdable_base_amount * percentage
+                vals['period_withholding_amount'] = period_withholding_amount
+                computed_withholding_amount = vals["period_withholding_amount"] - vals["previous_withholding_amount"]
+                vals['computed_withholding_amount'] = computed_withholding_amount
+                vals['amount'] = computed_withholding_amount
+                payment_withholding = self.l10n_ar_withholding_line_ids.filtered(lambda x: x.tax_id == tax)
+                if not computed_withholding_amount:
+                    # if on refresh no more withholding, we delete if it exists
+                    if payment_withholding:
+                        commands.append(Command.delete(payment_withholding.id))
+                    continue
+
+
             if "tax_withholding_id" in vals:
                 vals.pop("tax_withholding_id")
             if "date" in vals:
