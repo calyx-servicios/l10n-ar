@@ -173,7 +173,7 @@ class AccountPayment(models.Model):
                 'payment_date': rec.date,
                 'communication': rec.ref,
             })
-            rec.payment_group_id.post()
+            #rec.payment_group_id.post()
         return recs
 
     @api.depends('payment_group_id')
