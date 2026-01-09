@@ -472,12 +472,15 @@ class AccountPaymentGroup(models.Model):
                 if commands:
                     rec.l10n_ar_withholding_line_ids = commands
 
-    def _get_regimen_ganancias_desc(self):
+    def _get_payment_group_tax_desc(self, tax_id):
         self.ensure_one()
-        if self.retencion_ganancias == "nro_regimen" and self.regimen_ganancias_id:
-            reg = self.regimen_ganancias_id
-            return f"{reg.codigo_de_regimen} - {reg.concepto_referencia}"
-        return False
+        if tax_id.withholding_type == "tabla_ganancias":
+            if self.retencion_ganancias == "nro_regimen" and self.regimen_ganancias_id:
+                reg = self.regimen_ganancias_id
+                return f"{reg.codigo_de_regimen} - {reg.concepto_referencia}"
+            return False
+        else:
+            return tax_id.invoice_label
 
     def get_tax_withholding_vals(self, tax, payment_group, force_withholding_amount_type=None):
         self = tax

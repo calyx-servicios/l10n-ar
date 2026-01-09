@@ -133,7 +133,7 @@
                                         Régimen / Descripción:
                                     </td>
                                     <td class="text-left">
-                                        <span t-esc="o.payment_group_id._get_regimen_ganancias_desc()"/>
+                                        <span t-esc="o.payment_group_id._get_payment_group_tax_desc(o.tax_id)"/>
                                     </td>
                                 </tr>
                                 <tr>
