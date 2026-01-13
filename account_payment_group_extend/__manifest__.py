@@ -1,6 +1,6 @@
 {
     "name": "Extension de Grupos de Pago con Múltiples Métodos",
-    "version": "17.0.1.0.35",
+    "version": "17.0.1.0.36",
     "category": "Accounting",
     "author": "Felipe Carlini",
     "license": "AGPL-3",
