@@ -104,7 +104,7 @@
                                     </td>
                                     <td class="text-left">
                                         <t t-if="o.currency_id">
-                                            <span t-esc="':.2f'.format(o.base_amount)"/>
+                                            <span t-esc="'{:.2f}'.format(o.base_amount)"/>
                                         </t>
                                     </td>
                                 </tr>
@@ -114,7 +114,7 @@
                                     </td>
                                     <td class="text-left">
                                         <t t-if="o.currency_id">
-                                            <span t-esc="':.2f'.format(o.amount)"/>
+                                            <span t-esc="'{:.2f}'.format(o.amount)"/>
                                         </t>
                                     </td>
                                 </tr>
@@ -152,7 +152,7 @@
                                         <t t-if="o.payment_group_id.currency_id">
                                             <span t-esc="o.payment_group_id.currency_id.symbol"/>
                                         </t>
-                                        <span t-esc="':.2f'.format(o.base_amount)"/>
+                                        <span t-esc="'{:.2f}'.format(o.base_amount)"/>
                                     </td>
                                 </tr>
                                 <tr>
@@ -163,7 +163,7 @@
                                         <t t-if="o.payment_group_id.currency_id">
                                             <span t-esc="o.payment_group_id.currency_id.symbol"/>
                                         </t>
-                                        <span t-esc="':.2f'.format(o.amount)"/>
+                                        <span t-esc="'{:.2f}'.format(o.amount)"/>
                                     </td>
                                 </tr>
                             </t>
