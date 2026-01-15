@@ -468,7 +468,8 @@ class AccountPaymentGroup(models.Model):
                     if line.tax_id.l10n_ar_withholding_sequence_id:
                         commands.append(Command.update(line.id, {'name': line.tax_id.l10n_ar_withholding_sequence_id.next_by_id()}))
                     else:
-                        raise UserError("Por favor configure una secuencia para el impuesto %s" % line.tax_id.name)
+                        name = line.tax_id.with_context(lang='es_AR').name
+                        raise UserError("Por favor configure una secuencia para el impuesto %s" % name)
                 if commands:
                     rec.l10n_ar_withholding_line_ids = commands
 
