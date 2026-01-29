@@ -1,0 +1,2 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+l10n_ar_reports_custom.access_account_ar_vat_line_report,access_account_ar_vat_line_report,l10n_ar_reports_custom.model_account_ar_vat_line_report,account.group_account_readonly,1,1,1,1

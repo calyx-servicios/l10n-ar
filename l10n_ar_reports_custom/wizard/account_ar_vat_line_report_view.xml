@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+
+    <record model="ir.ui.view" id="account_ar_vat_line_report_form_view">
+        <field name="name">account.ar.vat.line.report.form.view</field>
+        <field name="model">account.ar.vat.line.report</field>
+        <field name="arch" type="xml">
+            <form string="Libro iva">
+                <sheet>
+                    <group>
+                        <field name="company_id"/>
+                        <field name="start_date"/>
+                        <field name="end_date"/>
+                        <field name="report_type"/>
+                    </group>
+                </sheet>
+                <footer>
+                    <button string="Exportar" type="object" class="oe_highlight" name="action_report"/>
+                    <button string="Close" class="btn btn-secondary" special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <record model="ir.actions.act_window" id="action_account_ar_vat_line_report">
+        <field name="name">Libro iva</field>
+        <field name="res_model">account.ar.vat.line.report</field>
+        <field name="view_mode">form</field>
+        <field name="view_id" ref="account_ar_vat_line_report_form_view"/>
+        <field name="target">new</field>
+    </record>
+
+    <menuitem
+        id="ccount_ar_vat_line_report_menuitem"
+        name="Libro iva"
+        parent="l10n_ar.account_reports_ar_statements_menu"
+        sequence="30"
+        action="action_account_ar_vat_line_report"
+    />
+
+</odoo>
