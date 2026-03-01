@@ -36,7 +36,7 @@ class AccountPayment(models.Model):
         digits=(16, 4),
     )
     signed_amount_company_currency = fields.Monetary(
-        currency_field='company_currency_id', compute='_compute_amount_company_currency_signed')
+        currency_field='company_currency_id', compute='_compute_signed_amount_company_currency')
     payment_method_description = fields.Char(
         compute='_compute_payment_method_description',
         string='Payment Method Desc.',
@@ -81,7 +81,7 @@ class AccountPayment(models.Model):
             rec.payment_method_description = rec.payment_method_id.display_name
 
     @api.depends('amount_company_currency', 'payment_type')
-    def _compute_amount_company_currency_signed(self):
+    def _compute_signed_amount_company_currency(self):
         """ new field similar to amount_company_currency_signed but:
         1. is positive for payments to suppliers
         2. we use the new field amount_company_currency instead of amount_total_signed, because amount_total_signed is
