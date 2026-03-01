@@ -14,6 +14,7 @@ class AccountTax(models.Model):
 
     type_tax_use = fields.Selection(
         selection_add=[('customer', 'Pago de Cliente'), ('supplier', 'Pago de Proveedor')],
+        ondelete={'customer': 'cascade', 'supplier': 'cascade'},
     )
     amount = fields.Float(string='Importe', default=0.0)
     withholding_sequence_id = fields.Many2one(
@@ -95,6 +96,7 @@ class AccountTax(models.Model):
     )
     amount_type = fields.Selection(
         selection_add=[('partner_tax', 'Alícuota en el Contacto')],
+        ondelete={'partner_tax': 'cascade'},
     )
 
     def get_withholding_vals(self, payment_group, force_withholding_amount_type=None):
