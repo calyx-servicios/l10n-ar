@@ -8,7 +8,7 @@ _logger = logging.getLogger(__name__)
 
 class AccountImportPadronRetPerc(models.Model):
     _name = 'account.import.padron.ret.perc'
-    _description = _("Account import patterns withholding and perception")
+    _description = "Account import patterns withholding and perception"
 
     name = fields.Date('Date', required=True)
     ubication_file_import = fields.Char(string='Location File Import')

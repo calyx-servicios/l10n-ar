@@ -3,7 +3,7 @@ from odoo import models, fields, api, _
 
 class AccountPadronRetentionPerceptionType(models.Model):
     _name = 'account.padron.retention.perception.type'
-    _description = _("Account Patterns Withholding and Perception type")
+    _description = "Account Patterns Withholding and Perception type"
 
     name = fields.Char(string='Name')
     description = fields.Char(string='Description', size=256)

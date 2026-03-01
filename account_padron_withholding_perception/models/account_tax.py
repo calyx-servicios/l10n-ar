@@ -9,19 +9,12 @@ from datetime import date
 import logging
 _logger = logging.getLogger(__name__)
 
-TYPE_TAX_USE = [
-    ('sale', 'Ventas'),
-    ('purchase', 'Compras'),
-    ('customer', 'Pago de Cliente'),
-    ('supplier', 'Pago de Proveedor'),
-    ('none', 'Ninguno'),
-]
-
 class AccountTax(models.Model):
     _inherit = "account.tax"
 
-    type_tax_use = fields.Selection(TYPE_TAX_USE, string='Tax Type', required=True, default="sale",
-        help="Determina dónde se puede seleccionar el impuesto. Nota: 'Ninguno' significa que un impuesto no se puede usar solo, sin embargo, aún se puede usar en un grupo. 'Ajuste' se utiliza para realizar el ajuste de impuestos.")
+    type_tax_use = fields.Selection(
+        selection_add=[('customer', 'Pago de Cliente'), ('supplier', 'Pago de Proveedor')],
+    )
     amount = fields.Float(string='Importe', default=0.0)
     withholding_sequence_id = fields.Many2one(
         'ir.sequence',
@@ -100,18 +93,9 @@ class AccountTax(models.Model):
         'tax_withholding_id',
         'Reglas',
     )
-    amount_type = fields.Selection(default='percent', string="Tax Computation", required=True,
-        selection=[('group', 'Grupo de Impuestos'), ('fixed', 'Fijo'), ('percent', 'Porcentaje'), ('division', 'Porcentaje de Impuesto sobre el Precio Incluido'), ('partner_tax', 'Alícuota en el Contacto')],
-        help="""
-    - Grupo de Impuestos: El impuesto es una configuración de sub-impuestos.
-    - Fijo: El importe del impuesto permanece igual sea cual sea el precio .
-    - Porcentaje: El importe del impuesto es un porcentaje del precio:
-        ej. 100 * (1 + 10%) = 110 (precio no incluído)
-        ej. 110 / (1 + 10%) = 100 (precio incluído)
-    - Porcentaje de Impuesto sobre el Precio Incluido: El importe del impuesto es una división del precio:
-        ej. 180 / (1 - 10%) = 200 (precio no incluído)
-        ej. 200 * (1 - 10%) = 180 (precio incluído)
-        """)
+    amount_type = fields.Selection(
+        selection_add=[('partner_tax', 'Alícuota en el Contacto')],
+    )
 
     def get_withholding_vals(self, payment_group, force_withholding_amount_type=None):
 

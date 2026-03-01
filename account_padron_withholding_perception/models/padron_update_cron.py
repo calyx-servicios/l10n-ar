@@ -8,7 +8,7 @@ _logger = logging.getLogger(__name__)
 
 class PadronUpdateCron(models.Model):
     _name = "padron.update.cron"
-    _description = _("Patterns Update cron")
+    _description = "Patterns Update cron"
 
     @api.model
     def update_padron(self, next_month=None):

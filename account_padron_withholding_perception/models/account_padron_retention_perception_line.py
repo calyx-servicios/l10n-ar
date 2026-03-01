@@ -6,7 +6,7 @@ from odoo.exceptions import UserError
 
 class AccountPadronRetentionPerceptionLine(models.Model):
     _name = 'account.padron.retention.perception.line'
-    _description = _("Account patterns withholding and perception line")
+    _description = "Account patterns withholding and perception line"
 
     import_padron_id = fields.Many2one('account.import.padron.ret.perc', string="Import Header", ondelete='cascade')
     padron_type_id = fields.Many2one('account.padron.retention.perception.type',  string='Type Padron', ondelete='cascade')
