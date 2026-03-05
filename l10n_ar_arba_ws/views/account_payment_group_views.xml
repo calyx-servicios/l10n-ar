@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="view_account_payment_group_arba" model="ir.ui.view">
+        <field name="name">account.payment.group.form.inherit.arba</field>
+        <field name="model">account.payment.group</field>
+        <field name="inherit_id" ref="account_payment_group_extend.account_payment_group_form_inherit"/>
+        <field name="arch" type="xml">
+            <!-- Tabla de retenciones de proveedores -->
+            <xpath expr="(//field[@name='l10n_ar_withholding_line_ids']//field[@name='name'])[2]" position="after">
+                <field name="l10n_ar_cert_number" string="Cert. ARBA" optional="hide"/>
+                <field name="l10n_ar_dj_arba_id" optional="hide"/>
+                <field name="l10n_ar_arba_wh_mode" optional="hide"/>
+                <field name="l10n_ar_state_id" column_invisible="True"/>
+                <button name="send_to_arba" type="object" icon="oi-arrow-right" string="ARBA"
+                        invisible="
+                            l10n_ar_arba_wh_mode != 'batch_import'
+                            or l10n_ar_cert_number
+                            or parent.state in ['draft', 'cancel']
+                            or l10n_ar_state_id != %(base.state_ar_b)d"
+                        help="Enviar esta retención a ARBA"/>
+            </xpath>
+        </field>
+    </record>
+
+</odoo>
