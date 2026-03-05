@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- Agrega campos ARBA al árbol de líneas de pago dentro del grupo de pago.
+         En Odoo 16 las retenciones son account.payment con payment_method_code='withholding'. -->
+    <record id="view_account_payment_group_arba" model="ir.ui.view">
+        <field name="name">account.payment.from_group.tree.inherit.arba</field>
+        <field name="model">account.payment</field>
+        <field name="inherit_id" ref="account_payment_group.view_account_payment_from_group_tree"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='journal_id']" position="after">
+                <field name="payment_method_code" invisible="1"/>
+                <field name="l10n_ar_is_arba_wh" invisible="1"/>
+                <field name="l10n_ar_cert_number" string="Cert. ARBA" optional="hide"/>
+                <field name="l10n_ar_dj_arba_id" optional="hide"/>
+                <field name="l10n_ar_arba_wh_mode" optional="hide"/>
+                <button name="send_to_arba" type="object" icon="fa-arrow-right" string="ARBA"
+                        attrs="{
+                            'invisible': ['|',
+                                ('l10n_ar_is_arba_wh', '=', False), '|',
+                                ('l10n_ar_cert_number', '!=', False), '|',
+                                ('l10n_ar_arba_wh_mode', '!=', 'batch_import'),
+                                ('state', '!=', 'posted')
+                            ]
+                        }"
+                        help="Enviar esta retención a ARBA"/>
+            </xpath>
+        </field>
+    </record>
+
+</odoo>

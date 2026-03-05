@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Agrega campos ARBA al formulario individual de un pago-retención.
+         En Odoo 16 no existe l10n_ar.payment.withholding; las retenciones son account.payment. -->
+    <record id="view_l10n_ar_payment_withholding_form" model="ir.ui.view">
+        <field name="name">account.payment.form.arba</field>
+        <field name="model">account.payment</field>
+        <field name="inherit_id" ref="account_withholding.view_account_payment_form"/>
+        <field name="arch" type="xml">
+            <field name="withholding_base_amount" position="after">
+                <field name="l10n_ar_cert_number"/>
+                <field name="l10n_ar_dj_arba_id"/>
+            </field>
+        </field>
+    </record>
+</odoo>
