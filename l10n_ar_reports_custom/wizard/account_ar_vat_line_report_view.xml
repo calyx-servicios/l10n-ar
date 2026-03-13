@@ -16,6 +16,7 @@
                 </sheet>
                 <footer>
                     <button string="Exportar" type="object" class="oe_highlight" name="action_report"/>
+                    <button string="Exportar xlsx" type="object" class="oe_highlight" name="action_report_xlsx"/>
                     <button string="Close" class="btn btn-secondary" special="cancel"/>
                 </footer>
             </form>
