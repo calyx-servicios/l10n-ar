@@ -10,3 +10,4 @@ from . import padron_update_cron
 # from . import res_partner_arba_alicuot
 from . import res_partner
 from . import res_config_settings
+from . import l10n_ar_payment_withholding
