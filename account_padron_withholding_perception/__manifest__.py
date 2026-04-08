@@ -14,9 +14,10 @@
     "installable": True,
     "application": False,
     "depends": [
+        'l10n_ar_ux',
         'account_payment_group',
         'account_withholding_automatic',
-        'l10n_ar_account_withholding'
+        'l10n_ar_account_withholding',
     ],
     "data": [
         'security/security.xml',

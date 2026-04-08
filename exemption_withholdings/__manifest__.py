@@ -15,6 +15,7 @@
     "application": False,
     "depends": [
         'base',
+        'l10n_ar_ux',
         'l10n_ar_account_withholding',
         'account_payment_group',
         'account_withholding_automatic',
