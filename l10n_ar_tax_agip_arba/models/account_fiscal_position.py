@@ -60,70 +60,70 @@ class AccountFiscalPositionL10nArTax(models.Model):
 
         cuit_clean = cuit.replace("-", "")
         company = self.fiscal_position_id.company_id
-        conn = None
-
-        try:
-            conn = company.padron_connect()
-            cur = conn.cursor()
-
-            # col2=fecha_desde, col3=fecha_hasta, col4=CUIT,
-            # col8=percepcion, col9=retencion
-            cur.execute(
-                "SELECT col2, col3, col8, col9 FROM agip WHERE col4 = %s",
-                (cuit_clean,),
-            )
-            rows = cur.fetchall()
-
-            if not rows:
-                _logger.info(
-                    "AGIP: CUIT %s no figura en el padrón.", cuit_clean
+        prefetch = self.env.context.get("padron_prefetch")
+        if prefetch is not None and "agip" in prefetch:
+            rows = prefetch["agip"]
+        else:
+            conn = None
+            try:
+                conn = company.padron_connect()
+                cur = conn.cursor()
+                # col2=fecha_desde, col3=fecha_hasta, col4=CUIT,
+                # col8=percepcion, col9=retencion
+                cur.execute(
+                    "SELECT col2, col3, col8, col9 FROM agip WHERE col4 = %s",
+                    (cuit_clean,),
                 )
-                return (
-                    None,
-                    "CUIT %s no figura en padrón AGIP" % cuit_clean,
+                rows = cur.fetchall()
+            except Exception as e:
+                _logger.error(
+                    "AGIP: error consultando BD externa para CUIT %s: %s",
+                    cuit_clean, str(e),
                 )
+                # (None, None) → adhoc aplica default_tax_id sin interrumpir la op.
+                return (None, None)
+            finally:
+                if conn:
+                    conn.close()
 
-            # fecha_desde=idx 0, fecha_hasta=idx 1
-            matching = self._padron_parse_date_range(
-                rows, 0, 1, date, to_date
-            )
-            if not matching:
-                _logger.info(
-                    "AGIP: CUIT %s existe pero sin vigencia para %s - %s.",
-                    cuit_clean, date, to_date,
-                )
-                return (
-                    None,
-                    "CUIT %s sin vigencia en padrón AGIP para el período"
-                    % cuit_clean,
-                )
-
-            # col8=percepcion (idx 2), col9=retencion (idx 3)
-            alicuota_per = self._padron_parse_alicuota(matching[2])
-            alicuota_ret = self._padron_parse_alicuota(matching[3])
-
-            alicuota = (
-                alicuota_ret
-                if self.tax_type == "withholding"
-                else alicuota_per
-            )
+        if not rows:
             _logger.info(
-                "AGIP: CUIT %s — retención=%.2f%% percepción=%.2f%%",
-                cuit_clean, alicuota_ret, alicuota_per,
+                "AGIP: CUIT %s no figura en el padrón.", cuit_clean
             )
-            return (alicuota, "Alícuota padrón AGIP (BD externa)")
-
-        except Exception as e:
-            _logger.error(
-                "AGIP: error consultando BD externa para CUIT %s: %s",
-                cuit_clean, str(e),
+            return (
+                None,
+                "CUIT %s no figura en padrón AGIP" % cuit_clean,
             )
-            # (None, None) → adhoc aplica default_tax_id sin interrumpir la op.
-            return (None, None)
 
-        finally:
-            if conn:
-                conn.close()
+        # fecha_desde=idx 0, fecha_hasta=idx 1
+        matching = self._padron_parse_date_range(
+            rows, 0, 1, date, to_date
+        )
+        if not matching:
+            _logger.info(
+                "AGIP: CUIT %s existe pero sin vigencia para %s - %s.",
+                cuit_clean, date, to_date,
+            )
+            return (
+                None,
+                "CUIT %s sin vigencia en padrón AGIP para el período"
+                % cuit_clean,
+            )
+
+        # col8=percepcion (idx 2), col9=retencion (idx 3)
+        alicuota_per = self._padron_parse_alicuota(matching[2])
+        alicuota_ret = self._padron_parse_alicuota(matching[3])
+
+        alicuota = (
+            alicuota_ret
+            if self.tax_type == "withholding"
+            else alicuota_per
+        )
+        _logger.info(
+            "AGIP: CUIT %s — retención=%.2f%% percepción=%.2f%%",
+            cuit_clean, alicuota_ret, alicuota_per,
+        )
+        return (alicuota, "Alícuota padrón AGIP (BD externa)")
 
     # ------------------------------------------------------------------
     # ARBA override
@@ -169,56 +169,57 @@ class AccountFiscalPositionL10nArTax(models.Model):
             table = "arbaper"
             ref_label = "Alícuota percepción ARBA (BD externa)"
 
-        conn = None
-        try:
-            conn = company.padron_connect()
-            cur = conn.cursor()
-
-            cur.execute(
-                "SELECT col3, col4, col9 FROM %s WHERE col5 = %%s" % table,
-                (cuit_clean,),
-            )
-            rows = cur.fetchall()
-
-            if not rows:
-                _logger.info(
-                    "ARBA: CUIT %s no figura en %s.", cuit_clean, table
+        prefetch = self.env.context.get("padron_prefetch")
+        if prefetch is not None and table in prefetch:
+            rows = prefetch[table]
+        else:
+            conn = None
+            try:
+                conn = company.padron_connect()
+                cur = conn.cursor()
+                cur.execute(
+                    "SELECT col3, col4, col9 FROM %s WHERE col5 = %%s" % table,
+                    (cuit_clean,),
                 )
-                return (
-                    None,
-                    "CUIT %s no figura en padrón ARBA" % cuit_clean,
+                rows = cur.fetchall()
+            except Exception as e:
+                _logger.error(
+                    "ARBA: error consultando BD externa para CUIT %s: %s",
+                    cuit_clean, str(e),
                 )
+                return (None, None)
+            finally:
+                if conn:
+                    conn.close()
 
-            # fecha_desde=idx 0, fecha_hasta=idx 1, alicuota=idx 2
-            matching = self._padron_parse_date_range(
-                rows, 0, 1, date, to_date
-            )
-            if not matching:
-                _logger.info(
-                    "ARBA: CUIT %s existe en %s pero sin vigencia para "
-                    "%s - %s.",
-                    cuit_clean, table, date, to_date,
-                )
-                return (
-                    None,
-                    "CUIT %s sin vigencia en padrón ARBA para el período"
-                    % cuit_clean,
-                )
-
-            alicuota = self._padron_parse_alicuota(matching[2])
+        if not rows:
             _logger.info(
-                "ARBA: CUIT %s — %s=%.2f%%",
-                cuit_clean, self.tax_type, alicuota,
+                "ARBA: CUIT %s no figura en %s.", cuit_clean, table
             )
-            return (alicuota, ref_label)
-
-        except Exception as e:
-            _logger.error(
-                "ARBA: error consultando BD externa para CUIT %s: %s",
-                cuit_clean, str(e),
+            return (
+                None,
+                "CUIT %s no figura en padrón ARBA" % cuit_clean,
             )
-            return (None, None)
 
-        finally:
-            if conn:
-                conn.close()
+        # fecha_desde=idx 0, fecha_hasta=idx 1, alicuota=idx 2
+        matching = self._padron_parse_date_range(
+            rows, 0, 1, date, to_date
+        )
+        if not matching:
+            _logger.info(
+                "ARBA: CUIT %s existe en %s pero sin vigencia para "
+                "%s - %s.",
+                cuit_clean, table, date, to_date,
+            )
+            return (
+                None,
+                "CUIT %s sin vigencia en padrón ARBA para el período"
+                % cuit_clean,
+            )
+
+        alicuota = self._padron_parse_alicuota(matching[2])
+        _logger.info(
+            "ARBA: CUIT %s — %s=%.2f%%",
+            cuit_clean, self.tax_type, alicuota,
+        )
+        return (alicuota, ref_label)
