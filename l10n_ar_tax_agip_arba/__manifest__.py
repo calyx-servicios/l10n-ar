@@ -1,7 +1,7 @@
 # License AGPL-3.0 or later (https://www.gnu.org/licenses/agpl).
 {
     "name": "AGIP y ARBA Padron - BD Externa",
-    "version": "18.0.1.0.0",
+    "version": "18.0.1.1.0",
     "author": "Calyx Servicios S.A.",
     "website": "http://odoo.calyx-cloud.com.ar/",
     "license": "AGPL-3",
@@ -15,6 +15,7 @@
     },
     "data": [
         "views/res_config_settings_views.xml",
+        "views/res_partner_view.xml",
     ],
     "installable": True,
     "application": False,
