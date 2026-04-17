@@ -60,15 +60,16 @@ class PadronUpdateCron(models.Model):
                 _logger.info(error)
                 user_id = self.env['res.users'].search([('id', '=', SUPERUSER_ID)])
                 _logger.info(user_id)
-                self.env['mail.message'].create({'message_type': "notification",
-                                                 'body': error,
-                                                 'subject': "Actualizacion de Padrones",
-                                                 'subtype_id': self.env.ref('mail.mt_comment').id,
-                                                 'needaction_partner_ids': [(4, user_id.partner_id.id)],
-                                                 'author_id': user_id.partner_id.id,
-                                                 'model': self._name,
-                                                 'res_id': self.id,
-                                                 })
+                self.env['mail.message'].create({
+                    'message_type': "notification",
+                    'body': error,
+                    'subject': "Actualizacion de Padrones",
+                    'subtype_id': self.env.ref('mail.mt_comment').id,
+                    'partner_ids': [(4, user_id.partner_id.id)],
+                    'author_id': user_id.partner_id.id,
+                    'model': self._name,
+                    'res_id': self.id,
+                })
 
     @api.model
     def close_padron(self):
