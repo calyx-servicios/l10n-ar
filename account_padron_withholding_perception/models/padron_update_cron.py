@@ -26,16 +26,15 @@ class PadronUpdateCron(models.Model):
         date_from = datetime.date(now.year, now.month, 1)
         if next_month:
             date_from = get_next_month(date_from)
-        date_to = (get_next_month(date_from) -
-                   datetime.timedelta(days=1)).strftime('%Y %m %d %H:%M:%S')
-        date_from = date_from.strftime('%Y %m %d %H:%M:%S')
+        date_to = get_next_month(date_from) - datetime.timedelta(days=1)
+        # date_from = date_from.strftime('%Y %m %d %H:%M:%S')
         for padron in self.env['account.padron.retention.perception.type'].search([]):
             try:
                 if padron.server_host and padron.server_database and padron.server_user \
                         and padron.server_password and padron.server_port and padron.type and padron.default_percentage_perception\
                         and padron.default_percentage_retention:
                     vals = {
-                        'name': date_from,
+                        'name': date_from.strftime('%Y-%m-%d'),
                         'server_host': padron.server_host,
                         'server_database': padron.server_database,
                         'server_user': padron.server_user,
@@ -50,23 +49,27 @@ class PadronUpdateCron(models.Model):
                         'state': 'open',
                     }
                     _logger.info(vals)
-                    self.env['account.import.padron.ret.perc'].search(
-                        [('default_date_from', '>=', date_from), ('default_date_from', '<=', date_to), ('type', '=', padron.type)])
-                    if not self.env['account.import.padron.ret.perc'].search([('default_date_from', '>=', date_from), ('default_date_from', '<=', date_to), ('type', '=', padron.type)]):
-                        padron_ids = self.env[
-                            'account.import.padron.ret.perc'].create(vals)
+                    existing = self.env['account.import.padron.ret.perc'].search([
+                        ('default_date_from', '>=', date_from),
+                        ('default_date_from', '<=', date_to),
+                        ('type', '=', padron.type)
+                    ], limit=1)
+                    if not existing:
+                        padron_ids = self.env['account.import.padron.ret.perc'].create(vals)
                         padron_ids.import_padron_server(context={})
             except (Exception) as error:
-                _logger.info(error)
-                user_id = self.env['res.users'].search([('id', '=', SUPERUSER_ID)])
+                error = str(error)
+                _logger.exception("Error en update_padron")
+                user_id = self.env.user
+                partner_id = user_id.partner_id
                 _logger.info(user_id)
-                self.env['mail.message'].create({
+                self.env['mail.message'].sudo().create({
                     'message_type': "notification",
                     'body': error,
                     'subject': "Actualizacion de Padrones",
                     'subtype_id': self.env.ref('mail.mt_comment').id,
-                    'partner_ids': [(4, user_id.partner_id.id)],
-                    'author_id': user_id.partner_id.id,
+                    'partner_ids': [(4, partner_id.id)] if partner_id else [],
+                    'author_id': partner_id.id if partner_id else False,
                     'model': self._name,
                     'res_id': self.id,
                 })
