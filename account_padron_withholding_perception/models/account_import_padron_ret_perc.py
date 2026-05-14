@@ -138,6 +138,14 @@ class AccountImportPadronRetPerc(models.Model):
         #                                                 date_to_string)
         conn = None
         flag_month = False
+        if isinstance(date_from, str):
+            date_from_final = date_from[0:4] + '-' + date_from[4:6] + '-' + date_from[6:8]
+        else:
+            date_from_final = date_from
+        if isinstance(date_to, str):
+            date_to_final = date_to[0:4] + '-' + date_to[4:6] + '-' + date_to[6:8]
+        else:
+            date_to_final = date_to
         try:
             #####################################################
             # PARA LAS RETENCIONES
