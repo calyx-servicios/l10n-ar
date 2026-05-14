@@ -14,8 +14,6 @@
     "installable": True,
     "application": False,
     "depends": [
-        'account_payment_group',
-        'l10n_ar_withholding_automatic',
         'l10n_ar_account_withholding'
     ],
     "data": [

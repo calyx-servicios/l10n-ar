@@ -388,11 +388,6 @@ msgid "Patterns Update cron"
 msgstr "Actualización del cron de padrones"
 
 #. module: account_padron_withholding_perception
-#: model:ir.model,name:account_padron_withholding_perception.model_account_payment_group
-msgid "Payment Group"
-msgstr "Grupo de Pago"
-
-#. module: account_padron_withholding_perception
 #: model:ir.model.fields,field_description:account_padron_withholding_perception.field_account_padron_retention_perception_type__payment_journal_retention_id
 msgid "Payment Journal Retention"
 msgstr "Diario de Retención"
@@ -547,28 +542,6 @@ msgstr "res.partner.arba_alicuot"
 #: model:ir.model.fields,field_description:account_padron_withholding_perception.field_res_config_settings__check_census_on_create
 msgid "¿Looking for aliquots of withholdings and perceptions in partner?"
 msgstr "¿Buscar alícuotas de retenciones y percepciones en partner?"
-
-#. module: account_padron_withholding_perception
-#: code:addons/account_padron_withholding_perception/models/account_payment_group.py:0
-#, python-format
-msgid ""
-"The minimum base/calculated withholding {} is higher or equal than the "
-"untaxed amount in the invoice, so it is not applied in this payment"
-msgstr ""
-"La base mínima/retención calculada {} es superior o igual a la "
-"cantidad no gravada en la factura, por lo que no se aplica en este pago"
-
-#. module: account_padron_withholding_perception
-#: code:addons/account_padron_withholding_perception/models/account_payment_group.py:0
-#, python-format
-msgid ""
-"The minimum base/calculated withholding {} is higher than the untaxed amount"
-" on some of the invoices, so the following discount {} is applied to "
-"withholding on the total in this payment."
-msgstr ""
-"La base mínima/retención calculada {} es superior a la cantidad no gravada"
-" en algunas de las facturas, por lo que se aplica el siguiente descuento {} a "
-"retención sobre el total de este pago."
 
 #. module: account_padron_withholding_perception
 #: model_terms:ir.ui.view,arch_db:account_padron_withholding_perception.view_account_padron_retention_perception_type_form
