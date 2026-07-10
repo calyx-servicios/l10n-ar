@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record model="ir.ui.view" id="res_config_settings_view_form_agip">
+        <field name="name">res.config.settings.view.form.inherit.l10n_ar_tax_agip_arba</field>
+        <field name="model">res.config.settings</field>
+        <field name="inherit_id" ref="l10n_ar.res_config_settings_view_form"/>
+        <field name="arch" type="xml">
+
+            <xpath expr="//block[@id='argentina_localization']" position="inside">
+                <setting
+                    id="padron_db"
+                    string="BD Externa de Padrones (AGIP y ARBA)"
+                    company_dependent="1"
+                    title="Credenciales para consultar alícuotas AGIP y ARBA desde la base de datos externa.">
+                    <div class="content-group" invisible="country_code != 'AR'">
+                        <div class="row mt16">
+                            <label for="padron_db_host" class="col-lg-3 o_light_label"/>
+                            <field name="padron_db_host"/>
+                        </div>
+                        <div class="row mt16">
+                            <label for="padron_db_port" class="col-lg-3 o_light_label"/>
+                            <field name="padron_db_port"/>
+                        </div>
+                        <div class="row mt16">
+                            <label for="padron_db_name" class="col-lg-3 o_light_label"/>
+                            <field name="padron_db_name"/>
+                        </div>
+                        <div class="row mt16">
+                            <label for="padron_db_user" class="col-lg-3 o_light_label"/>
+                            <field name="padron_db_user"/>
+                        </div>
+                        <div class="row mt16">
+                            <label for="padron_db_password" class="col-lg-3 o_light_label"/>
+                            <field name="padron_db_password"/>
+                        </div>
+                        <div class="row mt16">
+                            <button
+                                name="padron_db_test"
+                                type="object"
+                                class="oe_link oe_inline"
+                                string="⇒ Verificar Conexión BD Padrones"/>
+                        </div>
+                    </div>
+                </setting>
+            </xpath>
+
+        </field>
+    </record>
+
+</odoo>
