@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+    <data noupdate="1">
+
+<!--        All the modules that have views that should be available only for argentinian companies -->
+        <record id="ir_config_parameter_ln10_ar_modules_views_only_ar_companies" model="ir.config_parameter">
+            <field name="key">ln10_ar_modules_views_only_ar_companies</field>
+            <field name="value">l10n_latam_check_ux, account_cashbox, account_accountant_ux, account_batch_payment_ux, account_interests, account_invoice_commission, account_invoice_partial, account_payment_term_surcharge, account_tax_settlement, account_ux, delivery_ux, l10n_ar_account_reports, l10n_ar_account_withholding_ratio,l10n_ar_bank, l10n_ar_edi, l10n_ar_edi_ux, l10n_ar_purchase, l10n_ar_purchase_stock, l10n_ar_sale, l10n_ar_sale_order_type, l10n_ar_stock, l10n_ar_stock_delivery, l10n_ar_ux, l10n_ar_tax, l10n_ar_withholding_ux, sale_delivery_ux, sale_margin_ux, sale_stock_ux, sale_ux, stock_account_ux, stock_landed_costs_ux, stock_ux, stock_voucher, website_sale_account_invoice_commission, account_background_post, account_cashbox_l10n_latam_check, account_debt_report, account_invoice_control, account_invoice_move_currency, account_invoice_prices_update, account_invoice_tax, account_journal_book_report, account_payment_financial_surcharge, account_payment_pro, account_payment_pro_currency, account_payment_pro_receiptbook, account_payment_ux, card_installment, l10n_ar, l10n_ar_reports, l10n_ar_withholding, l10n_latam_invoice_document, l10n_ar_withholding_automatic, l10n_ar_currency_update, l10n_ar_account_withholding, account_padron_withholding_perception, exemption_withholdings, account_internal_transfer, crm_sale_ux, l10n_ar_payment_bundle, report_aeroo</field>
+        </record>
+
+    </data>
+
+</odoo>
