@@ -47,6 +47,8 @@ class AccountImportPadronRetPerc(models.Model):
         partner_dic = {}
         for import_obj in self:
             _logger.info("import_padron_server()--> for %s" % str(import_obj))
+            if not import_obj.default_date_from or not import_obj.default_date_to:
+                raise ValidationError(_("Debe completar la Fecha de inicio Default y la Fecha final Default antes de importar."))
             if context and 'partner_dic' in context:
                 partner_dic = context['partner_dic']
             else:
