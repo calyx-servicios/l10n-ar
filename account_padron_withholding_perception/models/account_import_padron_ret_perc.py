@@ -49,38 +49,58 @@ class AccountImportPadronRetPerc(models.Model):
             _logger.info("import_padron_server()--> for %s" % str(import_obj))
             if not import_obj.default_date_from or not import_obj.default_date_to:
                 raise ValidationError(_("Debe completar la Fecha de inicio Default y la Fecha final Default antes de importar."))
-            if context and 'partner_dic' in context:
-                partner_dic = context['partner_dic']
-            else:
-                for partner_obj in import_obj.padron_type_id.line_partner_ids:
-                    if not partner_obj.vat:
-                        error_contacts.append(partner_obj)
-                    elif partner_obj.l10n_latam_identification_type_id.country_id.code != 'AR':
-                        error_contacts.append(partner_obj)
-                    else:
-                        partner_dic[partner_obj.vat.replace("-", "")] = partner_obj
-            if error_contacts:
-                error_msgs = [
-                    _("Error: The contact {} with ID({}) does not have a VAT identification number.").format(contact.name, contact.id)
-                    if not contact.vat else
-                    _("Error: The contact {} with ID({}) is not from Argentina.").format(contact.name, contact.id)
-                    for contact in error_contacts
-                ]
-                raise ValidationError('\n'.join(error_msgs))
 
-            date_from = str(import_obj.default_date_from)[
-                :4] + str(import_obj.default_date_from)[5:7] + str(import_obj.default_date_from)[8:10]
-            date_to = str(import_obj.default_date_to)[
-                :4] + str(import_obj.default_date_to)[5:7] + str(import_obj.default_date_to)[8:10]
-            if import_obj.type == 'agip':
-                self.search_table_agip(
-                    import_obj, partner_dic, date_from, date_to)
-            if import_obj.type == 'arba':
-                self.search_table_arba(
-                    import_obj, partner_dic, date_from, date_to)
-            if import_obj.type == 'other':
-                self.search_table_other(
-                    import_obj, partner_dic, date_from, date_to)
+            # Lock de concurrencia: evita que dos ejecuciones (ej. una manual
+            # y la automática mensual) corran al mismo tiempo sobre el mismo
+            # padron_type_id. Esto fue lo que generó el
+            # "could not serialize access due to concurrent update" sobre
+            # res_partner cuando dos corridas chocaron. pg_try_advisory_lock
+            # no es bloqueante: si otra sesión ya tiene el lock, devuelve
+            # False al instante en vez de esperar.
+            lock_key = import_obj.padron_type_id.id or 0
+            self.env.cr.execute("SELECT pg_try_advisory_lock(%s)", (lock_key,))
+            locked = self.env.cr.fetchone()[0]
+            if not locked:
+                raise ValidationError(
+                    _("Ya hay una importación de padrón en curso para '%s'. "
+                      "Espere a que finalice antes de volver a ejecutarla.")
+                    % (import_obj.padron_type_id.name or import_obj.padron_type_id.id))
+
+            try:
+                if context and 'partner_dic' in context:
+                    partner_dic = context['partner_dic']
+                else:
+                    for partner_obj in import_obj.padron_type_id.line_partner_ids:
+                        if not partner_obj.vat:
+                            error_contacts.append(partner_obj)
+                        elif partner_obj.l10n_latam_identification_type_id.country_id.code != 'AR':
+                            error_contacts.append(partner_obj)
+                        else:
+                            partner_dic[partner_obj.vat.replace("-", "")] = partner_obj
+                if error_contacts:
+                    error_msgs = [
+                        _("Error: The contact {} with ID({}) does not have a VAT identification number.").format(contact.name, contact.id)
+                        if not contact.vat else
+                        _("Error: The contact {} with ID({}) is not from Argentina.").format(contact.name, contact.id)
+                        for contact in error_contacts
+                    ]
+                    raise ValidationError('\n'.join(error_msgs))
+
+                date_from = str(import_obj.default_date_from)[
+                    :4] + str(import_obj.default_date_from)[5:7] + str(import_obj.default_date_from)[8:10]
+                date_to = str(import_obj.default_date_to)[
+                    :4] + str(import_obj.default_date_to)[5:7] + str(import_obj.default_date_to)[8:10]
+                if import_obj.type == 'agip':
+                    self.search_table_agip(
+                        import_obj, partner_dic, date_from, date_to)
+                if import_obj.type == 'arba':
+                    self.search_table_arba(
+                        import_obj, partner_dic, date_from, date_to)
+                if import_obj.type == 'other':
+                    self.search_table_other(
+                        import_obj, partner_dic, date_from, date_to)
+            finally:
+                self.env.cr.execute("SELECT pg_advisory_unlock(%s)", (lock_key,))
 
     def search_table_other(self, import_obj, partner_dic, date_from, date_to):
         for line_dicc in partner_dic:
@@ -110,7 +130,24 @@ class AccountImportPadronRetPerc(models.Model):
 
     def _get_conn(self, import_obj):
         _logger.info("_get_conn: ")
-        return psycopg2.connect(host=import_obj.server_host, port=import_obj.server_port, database=import_obj.server_database, user=import_obj.server_user, password=import_obj.server_password)
+        # Se agregan timeouts explícitos porque este server (ARBA/AGIP) es un
+        # servicio externo fuera de nuestro control: sin connect_timeout una
+        # conexión colgada bloquea el worker de Odoo hasta el limit_time_real
+        # (1800s), y sin statement_timeout una consulta lenta del lado del
+        # servidor externo puede colgar indefinidamente.
+        try:
+            server_port = int(import_obj.server_port) if import_obj.server_port else 5432
+        except (TypeError, ValueError):
+            server_port = 5432
+        return psycopg2.connect(
+            host=import_obj.server_host,
+            port=server_port,
+            database=import_obj.server_database,
+            user=import_obj.server_user,
+            password=import_obj.server_password,
+            connect_timeout=10,
+            options='-c statement_timeout=120000',  # 120s, ajustable según el volumen real del padrón
+        )
 
     def search_table_arba(self, import_obj, partner_dic, date_from, date_to):
         _logger.info("search_table_arba")
@@ -202,6 +239,11 @@ class AccountImportPadronRetPerc(models.Model):
                         new_line = self.env[
                             'account.padron.retention.perception.line'].sudo().create(vals)
             cur.close()
+            # Se cierra la conexión de arbaret antes de abrir la de arbaper.
+            # Antes se reasignaba `conn` sin cerrar la anterior, dejando una
+            # conexión huérfana abierta contra el servidor de ARBA en cada corrida.
+            conn.close()
+            conn = None
             ######################################################
             # PARA LAS PERCEPCIONES
             ######################################################
