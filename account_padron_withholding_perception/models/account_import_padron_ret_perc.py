@@ -178,6 +178,11 @@ class AccountImportPadronRetPerc(models.Model):
         #         8:10] + str(date_from)[5:7] + str(date_from)[:4]
         #     where += ' and (col3<=%s and col4>=%s);' % (date_from_string,
         #                                                 date_to_string)
+
+        # 'YYYYMMDD' -> 'YYYY-MM-DD'
+        date_from_final = date_from[0:4] + '-' + date_from[4:6] + '-' + date_from[6:8]
+        date_to_final = date_to[0:4] + '-' + date_to[4:6] + '-' + date_to[6:8]
+
         conn = None
         flag_month = False
         try:
@@ -218,14 +223,6 @@ class AccountImportPadronRetPerc(models.Model):
                     if flag:
                         percentage_retention = (
                             str(line[3]).replace('.', '')).replace(',', '.')
-                        if type(date_from) == str:
-                            date_from_final = date_from[0:4] + '-' + date_from[4:6] + '-'  + date_from[6:8]
-                        else:
-                            date_from_final = date_from
-                        if type(date_to) == str:
-                            date_to_final = date_to[0:4] + '-' + date_to[4:6] + '-'  + date_to[6:8]
-                        else:
-                            date_to_final = date_to
                         vals = {
                             'import_padron_id': import_obj.id,
                             'padron_type_id': import_obj.padron_type_id.id,
@@ -360,6 +357,10 @@ class AccountImportPadronRetPerc(models.Model):
             where += ' and (col2<=%s and col3>=%s);' % (date_from_string,
                                                         date_to_string)
 
+        # 'YYYYMMDD' -> 'YYYY-MM-DD'
+        date_from_final = date_from[0:4] + '-' + date_from[4:6] + '-' + date_from[6:8]
+        date_to_final = date_to[0:4] + '-' + date_to[4:6] + '-' + date_to[6:8]
+
         conn = None
         flag_month = False
         try:
@@ -393,14 +394,6 @@ class AccountImportPadronRetPerc(models.Model):
                             str(line[3]).replace('.', '')).replace(',', '.')
                         percentage_retention = (
                             str(line[4]).replace('.', '')).replace(',', '.')
-                        if type(date_from) == str:
-                            date_from_final = date_from[0:4] + '-' + date_from[4:6] + '-'  + date_from[6:8]
-                        else:
-                            date_from_final = date_from
-                        if type(date_to) == str:
-                            date_to_final = date_to[0:4] + '-' + date_to[4:6] + '-'  + date_to[6:8]
-                        else:
-                            date_to_final = date_to
                         vals = {
                             'import_padron_id': import_obj.id,
                             'padron_type_id': import_obj.padron_type_id.id,
