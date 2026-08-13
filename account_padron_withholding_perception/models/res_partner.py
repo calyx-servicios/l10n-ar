@@ -18,7 +18,7 @@ class ResPartner(models.Model):
             record.country_id.code == 'AR' and
             record.l10n_ar_afip_responsibility_type_id.code not in ('5', '7', '8', '9') and
             record.l10n_latam_identification_type_id.name == 'CUIT' and
-            self.env['ir.config_parameter'].get_param('account_padron_withholding_perception.check_census_on_create') and
+            self.env['ir.config_parameter'].sudo().get_param('account_padron_withholding_perception.check_census_on_create') and
             record.vat
         ):
             # Search for padrones and update line_padron_type_ids field
