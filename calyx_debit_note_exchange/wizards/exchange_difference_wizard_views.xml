@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_exchange_difference_wizard_form" model="ir.ui.view">
+        <field name="name">calyx.exchange.difference.wizard.form</field>
+        <field name="model">account.exchange.difference.wizard</field>
+        <field name="inherit_id" ref="account_exchange_difference_invoice.view_exchange_difference_wizard_form"/>
+        <field name="arch" type="xml">
+            <field name="journal_id" position="after">
+                <field name="date"/>
+            </field>
+            <field name="balance" position="after">
+                <field name="original_date" readonly="1"/>
+            </field>
+        </field>
+    </record>
+</odoo>
