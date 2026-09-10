@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="view_tax_form_tucuman" model="ir.ui.view">
+        <field name="name">account.tax.form.inherit.l10n_ar_tax_tucuman</field>
+        <field name="model">account.tax</field>
+        <field name="inherit_id" ref="l10n_ar_tax.view_tax_form"/>
+        <field name="arch" type="xml">
+            <field name="ratio" position="after">
+                <field name="computa_sobre_bruto"
+                    invisible="country_code != 'AR'
+                        or l10n_ar_type_tax_use != 'sale'
+                        or amount_type != 'percent'"/>
+            </field>
+        </field>
+    </record>
+
+</odoo>
