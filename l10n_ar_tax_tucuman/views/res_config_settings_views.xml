@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record model="ir.ui.view" id="res_config_settings_view_form_tucuman">
+        <field name="name">res.config.settings.view.form.inherit.l10n_ar_tax_tucuman</field>
+        <field name="model">res.config.settings</field>
+        <field name="inherit_id" ref="l10n_ar.res_config_settings_view_form"/>
+        <field name="arch" type="xml">
+
+            <!-- l10n_ar deja la sección oculta y espera que la muestre quien le agregue
+                 contenido (mismo patrón que l10n_ar_edi y l10n_ar_reports). -->
+            <div id="argentina_localization_section" position="attributes">
+                <attribute name="invisible">0</attribute>
+            </div>
+
+            <xpath expr="//block[@id='argentina_localization']" position="inside">
+                <setting
+                    id="l10n_ar_tucuman_db"
+                    string="BD Externa de Padrones (Tucumán)"
+                    company_dependent="1"
+                    title="Credenciales de sólo lectura para consultar el padrón
+                        de Ingresos Brutos de Tucumán.">
+                    <div class="content-group" invisible="country_code != 'AR'">
+                        <div class="row mt16">
+                            <label for="l10n_ar_tucuman_db_host" class="col-lg-3 o_light_label"/>
+                            <field name="l10n_ar_tucuman_db_host" placeholder="200.58.107.230"/>
+                        </div>
+                        <div class="row mt16">
+                            <label for="l10n_ar_tucuman_db_port" class="col-lg-3 o_light_label"/>
+                            <field name="l10n_ar_tucuman_db_port"/>
+                        </div>
+                        <div class="row mt16">
+                            <label for="l10n_ar_tucuman_db_name" class="col-lg-3 o_light_label"/>
+                            <field name="l10n_ar_tucuman_db_name"
+                                placeholder="tax-engine-padrones"/>
+                        </div>
+                        <div class="row mt16">
+                            <label for="l10n_ar_tucuman_db_user" class="col-lg-3 o_light_label"/>
+                            <field name="l10n_ar_tucuman_db_user"
+                                placeholder="eg_tucuman_consulta"/>
+                        </div>
+                        <div class="row mt16">
+                            <label for="l10n_ar_tucuman_db_password"
+                                class="col-lg-3 o_light_label"/>
+                            <field name="l10n_ar_tucuman_db_password" password="True"/>
+                        </div>
+                        <div class="row mt16">
+                            <label for="l10n_ar_tucuman_db_sslmode" class="col-lg-3 o_light_label"/>
+                            <field name="l10n_ar_tucuman_db_sslmode"/>
+                        </div>
+                        <div class="row mt16">
+                            <button
+                                name="l10n_ar_tucuman_db_test"
+                                type="object"
+                                class="oe_link oe_inline"
+                                string="⇒ Verificar Conexión BD Tucumán"/>
+                        </div>
+                    </div>
+                </setting>
+            </xpath>
+
+        </field>
+    </record>
+
+</odoo>
