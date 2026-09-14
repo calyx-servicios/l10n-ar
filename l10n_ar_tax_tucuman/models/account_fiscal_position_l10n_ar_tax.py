@@ -3,6 +3,8 @@ import logging
 from odoo import fields, models
 from odoo.exceptions import UserError
 
+from .res_company import TUCUMAN_SCHEMA, TUCUMAN_VIEWS
+
 _logger = logging.getLogger(__name__)
 
 
@@ -28,82 +30,132 @@ class AccountFiscalPositionL10nArTax(models.Model):
     def _get_tucuman_data(self, partner, date, to_date):
         """Alícuota del padrón de Tucumán para un CUIT y un período.
 
-        :return: (float|None, str) alícuota y referencia. None = no está en el padrón,
+        :return: (float|None, str) alícuota y referencia. None = sin alícuota en el padrón,
             se aplica el impuesto por defecto de la línea.
         """
         self.ensure_one()
 
-        # Temporal: falta definir cómo se representan en Odoo los CUITs que en
-        # v_retenciones_v1 traen dos filas (marcas CM y art2, con alícuotas distintas)
-        # cuando Odoo admite una sola alícuota por régimen y contribuyente.
-        if self.tax_type != "perception":
-            raise UserError(
-                self.env._("El padrón de Tucumán está implementado sólo para percepciones.")
-            )
-
-        # En bases demo no hay credenciales ni red para consultar el padrón (misma guarda
-        # que _get_agip_data, _get_arba_data y _get_rentas_cordoba_data).
+        # Para bases demo, se devuelve un valor dummy.
         if self.env.ref("base.user_demo", raise_if_not_found=False):
-            return 3.0, "VALOR DUMMY | dummy"
+            return (2.5 if self.tax_type == "withholding" else 3.0, "VALOR DUMMY | dummy")
 
         cuit = self._l10n_ar_tucuman_cuit(partner)
         if not cuit:
-            _logger.info(
-                "Padrón Tucumán: partner %s sin CUIT válido, se omite consulta.", partner.id
-            )
             return None, self.env._("Sin CUIT válido para consultar el padrón de Tucumán")
 
         periodo = date.strftime("%Y%m")
         row = self.env.context.get("l10n_ar_tucuman_row")
         if row is None:
-            row = self._l10n_ar_tucuman_fetch(cuit, periodo)[0]
+            row = self._l10n_ar_tucuman_resolve(partner, periodo)[0]
         if not row:
             return None, self.env._(
-                "CUIT %(cuit)s no figura en el padrón de Tucumán %(periodo)s",
+                "CUIT %(cuit)s sin alícuota en el padrón de Tucumán %(periodo)s",
                 cuit=cuit,
                 periodo=periodo,
             )
 
-        _logger.info(
-            "Padrón Tucumán: CUIT %s período %s -> alícuota %s (%s)",
-            cuit,
-            periodo,
-            row["alicuota"],
-            "bruto" if row["bruto"] else "neto",
-        )
         ref = self.env._(
             "Padrón Tucumán %(periodo)s | Alícuota %(alicuota)s",
             periodo=periodo,
             alicuota=row["alicuota"],
         )
+        if self.tax_type == "withholding":
+            ref += self.env._(" | Marca %s", row["marca"])
         return float(row["alicuota"]), ref
 
-    def _l10n_ar_tucuman_fetch(self, cuit, periodo):
-        """(dict|None, bool): la fila del CUIT y si el período está publicado.
-
-        Sin fila puede ser que el contribuyente no esté en el padrón (respuesta real) o
-        que ese período todavía no se haya publicado (no sabemos nada). Se distinguen
-        porque tienen tratamientos distintos.
-        """
+    def _l10n_ar_tucuman_resolve(self, partner, periodo):
+        """(fila|None, publicado): la fila del padrón que aplica a esta línea."""
         self.ensure_one()
+        tipo = "retención" if self.tax_type == "withholding" else "percepción"
+        cuit = self._l10n_ar_tucuman_cuit(partner)
+        if not cuit:
+            _logger.info(
+                "Padrón Tucumán %s: partner %s sin CUIT válido, se omite consulta.",
+                tipo,
+                partner.id,
+            )
+            return None, True
+
+        rows, publicado = self._l10n_ar_tucuman_fetch(cuit, periodo)
+        if not publicado:
+            _logger.info("Padrón Tucumán %s: período %s todavía no publicado.", tipo, periodo)
+            return None, False
+        if not rows:
+            _logger.info(
+                "Padrón Tucumán %s: CUIT %s no figura en el padrón %s, "
+                "se aplica el default de la posición fiscal.",
+                tipo,
+                cuit,
+                periodo,
+            )
+            return None, True
+
+        if self.tax_type == "withholding":
+            row, marca, motivo = self._l10n_ar_tucuman_select_withholding(rows, partner)
+            decision = "marca %s (%s)" % (marca, motivo)
+        else:
+            row, decision = rows[0], "fila única"
+
+        if row:
+            _logger.info(
+                "Padrón Tucumán %s: CUIT %s período %s -> %s, alícuota %s (%s)",
+                tipo,
+                cuit,
+                periodo,
+                decision,
+                row["alicuota"],
+                "bruto" if row["bruto"] else "neto",
+            )
+        else:
+            _logger.info(
+                "Padrón Tucumán %s: CUIT %s período %s -> %s no existe en el padrón, "
+                "se aplica el default de la posición fiscal.",
+                tipo,
+                cuit,
+                periodo,
+                decision,
+            )
+        return row, True
+
+    def _l10n_ar_tucuman_select_withholding(self, rows, partner):
+        """(fila|None, marca, motivo) según las reglas de retención de Tucumán."""
+        by_marca = {row["marca"]: row for row in rows}
+        tucuman = self.env.ref("base.state_ar_t")
+        if tucuman not in self.fiscal_position_id.state_ids:
+            marca, motivo = "CM", "posición fiscal sin Tucumán"
+        elif "E" in by_marca:
+            marca, motivo = "E", "exento en el padrón"
+        elif "CL" in by_marca:
+            marca, motivo = "CL", "contribuyente local en el padrón"
+        elif partner.l10n_ar_gross_income_type == "multilateral" and tucuman in (
+            partner.state_id | partner.gross_income_jurisdiction_ids
+        ):
+            marca, motivo = "CM", "partner multilateral con Tucumán"
+        else:
+            marca, motivo = "art2", "partner no multilateral con Tucumán"
+        return by_marca.get(marca), marca, motivo
+
+    def _l10n_ar_tucuman_fetch(self, cuit, periodo):
+        """(filas, publicado): las filas del CUIT y si el período está publicado."""
+        self.ensure_one()
+        view = "%s.%s" % (TUCUMAN_SCHEMA, TUCUMAN_VIEWS[self.tax_type])
         company = self.fiscal_position_id.company_id
         conn = None
         try:
             conn = company.l10n_ar_tucuman_connect()
             cur = conn.cursor()
             cur.execute(
-                "SELECT alicuota, bruto FROM eg_tucuman.v_percepciones_v1 "
-                "WHERE periodo = %s AND cuit = %s LIMIT 1",
+                f"SELECT marca, alicuota, bruto FROM {view} WHERE periodo = %s AND cuit = %s",
                 (periodo, cuit),
             )
-            row = cur.fetchone()
-            if row:
-                return {"alicuota": row[0], "bruto": row[1]}, True
-            cur.execute(
-                "SELECT 1 FROM eg_tucuman.v_percepciones_v1 WHERE periodo = %s LIMIT 1",
-                (periodo,),
-            )
-            return None, bool(cur.fetchone())
+            rows = [
+                {"marca": marca, "alicuota": alicuota, "bruto": bruto}
+                for marca, alicuota, bruto in cur.fetchall()
+            ]
+            if rows:
+                return rows, True
+            cur.execute(f"SELECT 1 FROM {view} WHERE periodo = %s LIMIT 1", (periodo,))
+            return [], bool(cur.fetchone())
         except UserError:
             raise
         except Exception as e:
@@ -126,17 +178,13 @@ class AccountFiscalPositionL10nArTax(models.Model):
     def _get_tax_from_ws(self, partner, date):
         """Consulta el padrón una sola vez y deja la fila en contexto, para que
         _get_tax_domain y _ensure_tax elijan la variante de base que indica 'bruto'."""
-        if self.webservice != "tucuman" or self.tax_type != "perception":
-            return super()._get_tax_from_ws(partner, date)
-        if self.env.ref("base.user_demo", raise_if_not_found=False):
+        if self.webservice != "tucuman" or self.env.ref(
+            "base.user_demo", raise_if_not_found=False
+        ):
             return super()._get_tax_from_ws(partner, date)
 
-        periodo = date.strftime("%Y%m")
-        cuit = self._l10n_ar_tucuman_cuit(partner)
-        row, publicado = self._l10n_ar_tucuman_fetch(cuit, periodo) if cuit else (None, True)
-
-        if not row and not publicado:
-            _logger.info("Padrón Tucumán: período %s todavía no publicado.", periodo)
+        row, publicado = self._l10n_ar_tucuman_resolve(partner, date.strftime("%Y%m"))
+        if not publicado:
             return self.default_tax_id
 
         rec = self.with_context(l10n_ar_tucuman_row=row or {})
@@ -145,15 +193,18 @@ class AccountFiscalPositionL10nArTax(models.Model):
     def _get_tax_domain(self, filter_tax_group=True):
         domain = super()._get_tax_domain(filter_tax_group=filter_tax_group)
         row = self.env.context.get("l10n_ar_tucuman_row")
-        if row:
-            domain += [("computa_sobre_bruto", "=", bool(row["bruto"]))]
-        return domain
+        if not row:
+            return domain
+        if self.tax_type == "withholding":
+            tax_type = "iibb_total" if row["bruto"] else "iibb_untaxed"
+            return domain + [("l10n_ar_tax_type", "=", tax_type)]
+        return domain + [("computa_sobre_bruto", "=", bool(row["bruto"]))]
 
     def _ensure_tax(self, rate):
-        # Red de seguridad: la plantilla de base bruta la crea el hook de instalación,
-        # pero si no está, _ensure_tax copiaría la de base neta con un nombre repetido.
+        # Red de seguridad: las plantillas de base bruta las crea el hook de instalación,
+        # pero si no están, _ensure_tax copiaría la de base neta con un nombre repetido.
         row = self.env.context.get("l10n_ar_tucuman_row")
         if row and row["bruto"]:
             chart_template = self.env["account.chart.template"].sudo()
-            chart_template._l10n_ar_tucuman_add_bruto_tax(self.fiscal_position_id.company_id)
+            chart_template._l10n_ar_tucuman_add_bruto_taxes(self.fiscal_position_id.company_id)
         return super()._ensure_tax(rate)
