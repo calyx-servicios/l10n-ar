@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="view_account_journal_form" model="ir.ui.view">
+        <field name="name">account.journal.form.l10n_latam_checkbook</field>
+        <field name="model">account.journal</field>
+        <field name="inherit_id" ref="account.view_account_journal_form"/>
+        <field name="arch" type="xml">
+            <group name="outgoing_payment" position="after">
+                <group string="Checks Management" name="check_management"
+                       invisible="',own_checks,' not in (selected_payment_method_codes or '') or type != 'bank'">
+                    <field name="l10n_latam_use_checkbooks"/>
+                    <field name="l10n_latam_checkbook_ids" context="{'active_test': False}"
+                           invisible="not l10n_latam_use_checkbooks" colspan="2" nolabel="1"/>
+                </group>
+            </group>
+        </field>
+    </record>
+
+</odoo>
