@@ -108,6 +108,11 @@ msgid "Electronic Checks"
 msgstr "Cheques Electrónicos"
 
 #. module: l10n_latam_checkbook
+#: model:ir.model.fields,field_description:l10n_latam_checkbook.field_l10n_latam_checkbook__range_from
+msgid "From Number"
+msgstr "Número Desde"
+
+#. module: l10n_latam_checkbook
 #: model:ir.model.fields,field_description:l10n_latam_checkbook.field_l10n_latam_checkbook__id
 msgid "ID"
 msgstr "ID"
@@ -163,6 +168,14 @@ msgstr "Secuencia"
 msgid "The check number %(number)s is bigger than max number for checkbook %(checkbook)s."
 msgstr ""
 "El número de cheque %(number)s es mayor al número hasta de la chequera "
+"%(checkbook)s."
+
+#. module: l10n_latam_checkbook
+#. odoo-python
+#: code:addons/l10n_latam_checkbook/models/account_payment.py:0
+msgid "The check number %(number)s is lower than min number for checkbook %(checkbook)s."
+msgstr ""
+"El número de cheque %(number)s es menor al número mínimo de la chequera "
 "%(checkbook)s."
 
 #. module: l10n_latam_checkbook

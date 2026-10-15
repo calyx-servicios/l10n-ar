@@ -7,6 +7,7 @@
         <field name="arch" type="xml">
             <list string="Checkbooks" decoration-muted="not active" editable="bottom">
                 <field name="type"/>
+                <field name="range_from" invisible="type == 'electronic'"/>
                 <field name="next_number" invisible="type == 'electronic'"/>
                 <field name="range_to" invisible="type == 'electronic'"/>
                 <field name="active" widget="boolean_toggle"/>

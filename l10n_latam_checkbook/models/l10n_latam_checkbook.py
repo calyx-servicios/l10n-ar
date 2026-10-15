@@ -31,6 +31,7 @@ class L10nLatamCheckbook(models.Model):
         required=True,
         ondelete="cascade",
     )
+    range_from = fields.Integer("From Number")
     range_to = fields.Integer("To Number")
     active = fields.Boolean(default=True)
 

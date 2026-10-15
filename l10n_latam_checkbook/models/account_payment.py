@@ -42,8 +42,16 @@ class AccountPayment(models.Model):
             ]).mapped("name"))
             for number in sorted(used_numbers):
                 msgs.append(_("The check number %s is already used.", number))
+            range_from = rec.l10n_latam_checkbook_id.range_from
             range_to = rec.l10n_latam_checkbook_id.range_to
             for number in names:
+                if range_from and number.isdecimal() and int(number) < range_from:
+                    msgs.append(_(
+                        "The check number %(number)s is lower than min number for checkbook"
+                        " %(checkbook)s.",
+                        number=number,
+                        checkbook=rec.l10n_latam_checkbook_id.display_name,
+                    ))
                 if range_to and number.isdecimal() and int(number) > range_to:
                     msgs.append(_(
                         "The check number %(number)s is bigger than max number for checkbook"
