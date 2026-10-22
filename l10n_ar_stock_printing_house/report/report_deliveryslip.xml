@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <template id="report_delivery_document" inherit_id="l10n_ar_stock_ux.report_delivery_document">
+        <div name="footer_left_column" position="inside">
+            <t t-if="o.picking_type_id.printing_house">
+                <div class="text-center mt-1" style="max-width: 100%;">
+                    <small style="display: block; white-space: normal; overflow-wrap: anywhere; word-break: break-word; line-height: 1.25; font-size: 9px;">
+                        <span t-out="o.picking_type_id.printing_house"/>
+                    </small>
+                </div>
+            </t>
+        </div>
+    </template>
+
+</odoo>
