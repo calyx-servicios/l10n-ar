@@ -69,7 +69,7 @@ class HrExpense(models.Model):
 
     def _compute_state(self):
         res = super()._compute_state()
-        # hr_expense_invoice calcula el estado de los gastos con factura mirando el asiento de
+        # hr_expense_invoice_calyx calcula el estado de los gastos con factura mirando el asiento de
         # transferencia al empleado. Cuando paga la compañía el asiento es el pago de la factura,
         # así que seguimos el criterio del core para lo que paga la compañía: pagado.
         for expense in self.filtered(
@@ -81,7 +81,7 @@ class HrExpense(models.Model):
     # === ACTION METHODS === #
 
     def action_expense_create_invoice(self):
-        """Reemplaza al de hr_expense_invoice, que valida la factura cuando paga la compañía: la
+        """Reemplaza al de hr_expense_invoice_calyx, que valida la factura cuando paga la compañía: la
         factura queda en borrador para cargar el número de comprobante AFIP antes de validarla."""
         self.ensure_one()
         if self.approval_state != "approved":

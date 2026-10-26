@@ -27,7 +27,7 @@ class HrExpenseSheet(models.Model):
 
     @api.depends("selectable_payment_method_line_ids")
     def _compute_payment_method_line_id(self):
-        # hr_expense_sheet vuelve al primer método seleccionable cada vez que cambian las líneas,
+        # hr_expense_sheet_calyx vuelve al primer método seleccionable cada vez que cambian las líneas,
         # y se lo impone a todos los gastos del informe sin avisar. Conservamos el elegido.
         keep = self.filtered(lambda x: x.payment_method_line_id in x.selectable_payment_method_line_ids)
         return super(HrExpenseSheet, self - keep)._compute_payment_method_line_id()
