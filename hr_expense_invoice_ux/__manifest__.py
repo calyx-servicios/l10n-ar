@@ -5,8 +5,8 @@
     "author": "Calyx Servicios",
     "license": "AGPL-3",
     "depends": [
-        "hr_expense_invoice",
-        "hr_expense_sheet",
+        "hr_expense_invoice_calyx",
+        "hr_expense_sheet_calyx",
     ],
     "data": [
         "views/hr_expense_views.xml",
