@@ -6,10 +6,11 @@
         <field name="inherit_id" ref="account_exchange_difference_invoice.view_exchange_difference_wizard_form"/>
         <field name="arch" type="xml">
             <field name="journal_id" position="after">
-                <field name="date"/>
+                <field name="country_code" invisible="1"/>
+                <field name="date" invisible="country_code != 'AR'"/>
             </field>
             <field name="balance" position="after">
-                <field name="original_date" readonly="1"/>
+                <field name="original_date" column_invisible="parent.country_code != 'AR'"/>
             </field>
         </field>
     </record>
