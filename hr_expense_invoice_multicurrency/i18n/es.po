@@ -1,0 +1,42 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# 	* hr_expense_invoice_multicurrency
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 18.0\n"
+"Report-Msgid-Bugs-To: \n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"Language: es\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Plural-Forms: nplurals=2; plural=n != 1;\n"
+
+#. module: hr_expense_invoice_multicurrency
+#. odoo-python
+#: code:addons/hr_expense_invoice_multicurrency/models/hr_expense_sheet.py:0
+msgid ""
+"Vendor bill amount mismatch!\n"
+"Please make sure amount in vendor bills equal to amount of its expense lines"
+msgstr ""
+"El importe de la factura del proveedor no coincide.\n"
+"Asegúrese de que el importe de la factura del proveedor coincide con el "
+"importe de sus líneas de gasto"
+
+#. module: hr_expense_invoice_multicurrency
+#. odoo-python
+#: code:addons/hr_expense_invoice_multicurrency/models/hr_expense_sheet.py:0
+msgid "Vendor bill state must be Posted"
+msgstr "Debe publicarse el estado de la factura del proveedor"
+
+#. module: hr_expense_invoice_multicurrency
+#. odoo-python
+#: code:addons/hr_expense_invoice_multicurrency/models/account_move.py:0
+msgid ""
+"You can't change the total amount, as there's an expense linked to this "
+"invoice."
+msgstr ""
+"No puede modificar el importe total, ya que hay un gasto vinculado a esta "
+"factura."
