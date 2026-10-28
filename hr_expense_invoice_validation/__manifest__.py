@@ -1,6 +1,6 @@
 {
     "name": "Supplier invoices Validation on HR expenses",
-    "version": "19.0.1.1.0",
+    "version": "19.0.1.1.1",
     "category": "Accounting",
     "summary": "Check the vendor bill total against its expenses when posting",
     "description": """
@@ -10,6 +10,10 @@ draft vendor bill can be completed freely (e.g. adding perceptions):
 
 * hr_expense_invoice_calyx (OCA) check of the vendor bill total.
 * hr_expense_invoice_ux check of the approved amount of the expenses.
+
+A difference with the approved amount of the expenses that only comes from
+rounding the taxes is adjusted on the first tax group, when creating the vendor
+bill, every time it is saved and when posting it.
 
 Other companies keep the behaviour of both modules.
     """,
