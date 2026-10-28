@@ -16,3 +16,10 @@ class HrExpense(models.Model):
                 and x.company_id.country_id.code == "AR"
             )
         return super(HrExpense, self - deferred)._check_invoice_amount_approved()
+
+    def action_expense_create_invoice(self):
+        res = super().action_expense_create_invoice()
+        self.filtered(
+            lambda x: x.company_id.country_id.code == "AR"
+        ).invoice_id._match_expense_rounding()
+        return res
