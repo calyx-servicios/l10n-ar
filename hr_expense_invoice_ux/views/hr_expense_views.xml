@@ -9,6 +9,10 @@
             <button name="action_expense_create_invoice" position="attributes">
                 <attribute name="invisible">invoice_id or state != 'approved'</attribute>
             </button>
+            <!-- La factura se crea con el proveedor del gasto: también cuando paga el empleado -->
+            <field name="vendor_id" position="attributes">
+                <attribute name="invisible">payment_mode != 'company_account' and state != 'approved' and not vendor_id</attribute>
+            </field>
             <field name="invoice_id" position="attributes">
                 <attribute name="readonly">state != 'approved'</attribute>
             </field>
