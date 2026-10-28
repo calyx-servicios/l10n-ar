@@ -190,8 +190,8 @@ class AccountFiscalPositionL10nArTax(models.Model):
         rec = self.with_context(l10n_ar_tucuman_row=row or {})
         return super(AccountFiscalPositionL10nArTax, rec)._get_tax_from_ws(partner, date)
 
-    def _get_tax_domain(self, filter_tax_group=True):
-        domain = super()._get_tax_domain(filter_tax_group=filter_tax_group)
+    def _get_tax_domain(self, filter_tax_group=True, **kwargs):
+        domain = super()._get_tax_domain(filter_tax_group=filter_tax_group, **kwargs)
         row = self.env.context.get("l10n_ar_tucuman_row")
         if not row:
             return domain
@@ -200,11 +200,11 @@ class AccountFiscalPositionL10nArTax(models.Model):
             return domain + [("l10n_ar_tax_type", "=", tax_type)]
         return domain + [("computa_sobre_bruto", "=", bool(row["bruto"]))]
 
-    def _ensure_tax(self, rate):
+    def _ensure_tax(self, rate, **kwargs):
         # Red de seguridad: las plantillas de base bruta las crea el hook de instalación,
         # pero si no están, _ensure_tax copiaría la de base neta con un nombre repetido.
         row = self.env.context.get("l10n_ar_tucuman_row")
         if row and row["bruto"]:
             chart_template = self.env["account.chart.template"].sudo()
             chart_template._l10n_ar_tucuman_add_bruto_taxes(self.fiscal_position_id.company_id)
-        return super()._ensure_tax(rate)
+        return super()._ensure_tax(rate, **kwargs)
