@@ -26,8 +26,23 @@ class HrExpense(models.Model):
             expense.price_unit = expense.total_amount
 
     def action_expense_create_invoice(self):
+        amounts = {
+            expense: expense.total_amount_currency
+            for expense in self.filtered(lambda x: x.company_id.country_id.code == "AR")
+        }
         res = super().action_expense_create_invoice()
-        self._set_price_unit_from_company_amount()
+        # hr_expense_invoice copies the vendor bill total, which can differ by
+        # rounding, and the core computes the company amount and the rate from
+        # each other, so both could end up at 0: the expense keeps its amount, and
+        # its company amount is the one of the vendor bill (created with its rate)
+        for expense, amount_currency in amounts.items():
+            vals = {"total_amount_currency": amount_currency}
+            invoice = expense.invoice_id
+            if expense.is_multiple_currency and invoice.invoice_currency_rate:
+                vals["total_amount"] = expense.company_currency_id.round(
+                    amount_currency / invoice.invoice_currency_rate
+                )
+            expense.write(vals)
         return res
 
     def _compute_price_unit(self):

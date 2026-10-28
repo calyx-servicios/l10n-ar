@@ -82,6 +82,49 @@ class TestHrExpenseInvoiceMulticurrency(TestExpenseCommon):
         self.assertAlmostEqual(self.expense.total_amount, 250.0)
         self.assertAlmostEqual(self.expense.price_unit, 250.0)
 
+    def test_create_invoice_keeps_company_amount_when_saved(self):
+        # As from the interface: the changes are saved before anything is read,
+        # and the core computed the company amount and the rate from each other
+        self.env.invalidate_all()
+        self.expense.action_expense_create_invoice()
+        self.env.flush_all()
+        self.env.invalidate_all()
+        self.assertAlmostEqual(self.expense.total_amount, 250.0)
+        self.assertAlmostEqual(self.expense.currency_rate, 0.5)
+        self.assertAlmostEqual(self.expense.price_unit, 250.0)
+        self.assertAlmostEqual(self.sheet.total_amount, 250.0)
+
+    def test_create_invoice_with_vat_keeps_expense_amounts(self):
+        vat = self.env["account.tax"].create(
+            {
+                "name": "IVA 21%",
+                "amount": 21.0,
+                "type_tax_use": "purchase",
+                "company_id": self.company_data["company"].id,
+            }
+        )
+        expense = self.env["hr.expense"].create(
+            {
+                "name": "Gasto en divisa con IVA",
+                "employee_id": self.expense_employee.id,
+                "product_id": self.product_c.id,
+                "currency_id": self.other_currency.id,
+                "total_amount_currency": 100.0,
+                "tax_ids": [Command.set(vat.ids)],
+            }
+        )
+        self.sheet.expense_line_ids += expense
+        self.assertAlmostEqual(expense.untaxed_amount_currency, 82.64)
+        self.env.invalidate_all()
+        expense.action_expense_create_invoice()
+        self.env.flush_all()
+        self.env.invalidate_all()
+        # The bill is built from the untaxed amount: 82.64 + 21% rounds to 99.99
+        self.assertAlmostEqual(expense.invoice_id.amount_untaxed, 82.64)
+        self.assertAlmostEqual(expense.total_amount_currency, 100.0)
+        self.assertAlmostEqual(expense.total_amount, 50.0)
+        self.assertAlmostEqual(expense.currency_rate, 0.5)
+
     def test_create_invoice_keeps_manual_rate(self):
         self.expense.total_amount = 300.0
         self.assertAlmostEqual(self.expense.currency_rate, 0.6)
