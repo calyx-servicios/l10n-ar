@@ -2,7 +2,6 @@ import logging
 from datetime import date
 from typing import List, Tuple
 
-from dateutil.relativedelta import relativedelta
 from odoo import _, api, fields, models
 from odoo.exceptions import RedirectWarning
 
@@ -84,7 +83,7 @@ class ResPartner(models.Model):
 
     def _run_update_padron_for_date(self, target_date) -> dict:
         """Run padron update for a single partner on a target date.
-        This is used by the monthly cron and reuses base-module logic.
+        This is used by the padron cron and reuses base-module logic.
         """
         self.ensure_one()
         partner = self.commercial_partner_id
@@ -271,17 +270,6 @@ class ResPartner(models.Model):
             "notif_type": notif_type,
             "message": msg,
         }
-
-    @api.model
-    def cron_update_padron_next_month(self, next_month=True):
-        """Monthly cron for active partners and next-month padron data.
-        Logs in partner chatter and continues on per-partner errors.
-        """
-        month_offset = 1 if next_month else 0
-        target_date = fields.Date.context_today(self) + relativedelta(
-            months=month_offset, day=1
-        )
-        return self._cron_update_padron_for_target_date(target_date)
 
     @api.model
     def cron_update_padron_selected_month(
